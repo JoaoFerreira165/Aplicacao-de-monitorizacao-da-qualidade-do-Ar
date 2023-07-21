@@ -24,5 +24,6 @@ document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
         console.log(x);
         setLanguage(x);  
         load(x);  
+        console.log(language);  
     });
 });
