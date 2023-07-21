@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iot Dashboard</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/meteo/css/barraOpt.css">
+    <link rel="stylesheet" href="/meteo/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/meteo/menu/menu.css">
+    <link rel="stylesheet" href="/meteo/css/rodape.css">
+    <link rel="stylesheet" href="/meteo/css/defaultTorres.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.2.9/justgage.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"
+        integrity="sha512-1/8DJLhOONj7obS4tw+A/2yb/cK9w5vWP+L4liQKYX/JeLZ/cqDuZfgDha4NK/kR/6b5IzHpS7/w80v4ED+8Mg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript" src="/meteo/bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script type="module" src="/meteo/menu/menu.js" defer></script>
+    <script type="module" src="./gas.js" defer></script>
+
+    <!--Axios-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
+
+    <!--Graficos-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.0/chartjs-plugin-zoom.min.js"></script>
+
+</head>
+
+<body>
+    <header id="header" class="header fixed-top d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-between tituloSite">
+            <a href="/meteo/index.html" class="logo d-flex align-items-center">
+                <img src="/meteo/icons/icon_Lusiada.png" alt="">
+                <span class="d-none d-lg-block">Air Quality Dashboard </span>
+            </a>
+            <i class="bi bi-list toggle-sidebar-btn"></i>
+        </div>
+        <nav class="header-nav ms-auto">
+            <ul class="d-flex align-items-center" id="Pagina-Atual">
+            </ul>
+        </nav>
+    </header>
+    <aside id="sidebar" class="sidebar">
+        <ul class="sidebar-nav" id="sidebar-nav">
+        </ul>
+    </aside>
+    <main id="main">
+        <div class="menu">
+            <form>
+                <div class="form-group me-3">
+                    <label for="start-date">Início:</label>
+                    <input type="datetime-local" id="start-date">
+                </div>
+                <div class="form-group">
+                    <span for="end-date">Fim:</label>
+                        <input type="datetime-local" id="end-date">
+                </div>
+                <div class="button-group">
+                    <button type="button" id="ActualData"
+                        class="btn btn-outline-primary btn-sm mt-1 rounded ActualData"><i
+                            class="fa fa-check"></i></button>
+                    <button type="button" id="ReloadPage"
+                        class="btn btn-outline-primary btn-sm ms-1 mt-1 rounded ms-2 ReloadPage"><i
+                            class="fa fa-refresh"></i></button>
+                </div>
+                <div class="filter">
+                    <button class="btn btn-outline-primary btn-sm dropdown-toggle rounded mb-2 btnFilter" type="button"
+                        id="dropdownMenuButtonFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                        Filtro
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonFilter">
+                        <li class="dropdown-header text-start border-bottom">
+                            <h5 style="color: gray;" class="d-flex justify-content-center">Filtrar Dados</h5>
+                        </li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart1h">Last Hour</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart3h active">Last 3 Hours</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart6h">Last 6 Hours</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart12h">Last 12 Hours</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChartToday">Today</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChartWeek">This Week</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChartMonth">Last Month</a></li>
+                    </ul>
+                </div>
+                <div class="refresh">
+                    <button class="btn btn-outline-primary btn-sm dropdown-toggle rounded ms-2 mb-2" type="button"
+                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        Refresh
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li class="dropdown-header text-start border-bottom">
+                            <h5 style="color: gray;" class="d-flex justify-content-center">Atualizar Dados</h5>
+                        </li>
+                        <li><a class="dropdown-item dropdown-itemRefresh active " value="15000">15 segundos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="30000">30 segundos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="60000">1 minuto</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="300000">5 minutos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="600000">10 minutos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="1800000">30 minutos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" id="desativarFiltro" value="null">Desativar</a></li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="preload"><img src="/meteo/icons/loading-slow-net.gif" id="gif" hidden></div>
+        <div class="conteudo" id="conteudo" hidden>
+            <div class="col-lg-12" id="NodataHidden" hidden>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center border-bottom text-center">
+                            <h4 class="card-title" id="TitulovariavelNoData"></h4>
+                        </div>
+                        <h2 id="mensagem" class="AlertNodata"></h2>
+                        <p id="mensagem2" class="text-center"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="restoconteudo" style="margin-top: -20px;">
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col mt-3">
+                            <div class="card">
+                                <div class="table-responsive">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-center border-bottom">
+                                            <h4 class="card-title">Atual</h4>
+                                        </div>
+                                        <h2 id="mensagemGauge" class="AlertNodata" hidden></h2>
+                                        <div class="d-flex justify-content-center p-4">
+                                            <div id="gauge" class="gauge" style="min-width: 250px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col mt-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-center border-bottom">
+                                        <h5 class="mb-2" id="MaxAndMin"></h5>
+                                    </div>
+                                    <h2 id="mensagemMaxMin" class="AlertNodata" hidden></h2>
+                                    <div class="mt-2 p-1 d-flex justify-content-between">
+                                        <div id="Max">
+                                            <span class="min">Min.</span>
+                                            <span id="MinValue" class="MinValue"></span>
+                                            <br>
+                                            <span class="min" id="dateMinValue"></span>
+                                        </div>
+                                        <div id="Min">
+                                            <span class="min border-left">Max.</span>
+                                            <span id="MaxValue" class="MaxValue"></span>
+                                            <br>
+                                            <span class="min" id="dateMaxValue"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between border-bottom">
+                                <h4 class="card-title" id="TitulovariavelGrafico"></h4>
+                                <div style="margin-top: 3px;">
+                                    <span class="min">Última Atualização: <span class="min"
+                                            id="LastTimeRefreshed"></span></span>
+                                </div>
+                            </div>
+                            <h2 id="mensagem" class="AlertNodata" hidden></h2>
+                            <canvas id="chart" style="max-height: 310px;" hidden></canvas>
+                            <div class="mt-2 d-flex justify-content-between ">
+                                <button id="ResetZoom" class="btn btn-sm btn-outline-dark rounded">Reset
+                                    Zoom</button>
+                                <button id="toggle-line" class="btn btn-sm btn-outline-dark rounded">Mostrar/Ocultar
+                                    Linha(dia Anterior)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-3">
+                    <div class="table-responsive">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between border-bottom">
+                                    <h5 class="card-title"> Estatística </h5>
+                                </div>
+                                <div class="mt-2">
+                                    <h2 id="mensagemTabela" class="AlertNodata" hidden></h2>
+                                    <div class="table-responsive">
+                                        <table style="font-size: 9pt;" id="tabelaEstatis"
+                                            class="table table-hover table-bordered border-secondary table-align-middle text-center tabelaEstatis">
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between border-bottom">
+                                <h5 class="card-title">Dados </h5>
+                                <button class="btn btn-sm btn-primary rounded mb-2"
+                                    id="abrirModalMaisDados">Mais</button>
+                            </div>
+                            <div class="mt-3">
+                                <table class="table table-hover" id="tabelaMostrarDados">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between border-bottom">
+                                <h5 class="card-title">Comparar: </h5>
+                            </div>
+                            <div class="mt-2" id="divCompare">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- The Modal -->
+        <div class="modal" id="myModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header d-flex justify-content-between">
+                        <span id="torreEsq" class="titleModal"></span>
+                        <span id="torreDir" class="titleModal"></span>
+                    </div>
+                    <p></p>
+                    <div class="d-flex justify-content-center">
+                        <span class="min" id="LastTimeRefreshedModal"></span>
+                    </div>
+                    <div class="modal-body">
+                        <div id="conteudoModal"></div>
+
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="modalMostrarDados">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header d-flex justify-content-center">
+                        <span id="torreAtualModal" class="titleModal"></span>
+                    </div>
+                    <p></p>
+                    <div class="d-flex justify-content-center">
+                        <span class="min" id="LastTimeRefreshedModalMaisDados"> </span>
+                    </div>
+                    <div class="modal-body" style="margin-top: -10px;">
+                        <div id="conteudoModalMostrarMaisDados"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btnExportToCsv" class="btn btn-primary"
+                            data-bs-dismiss="modal">Exportar
+                            Dados CSV </button>
+                        <button type="button" id="btnExportToPdf" class="btn btn-primary"
+                            data-bs-dismiss="modal">Exportar
+                            Dados Pdf</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer id="rodape" class="rodape">
+        <div class="sobre">
+            <h6><strong>SOBRE:</strong></h6>
+            <p>Website para controlo de Variaveis Atmosféricas</p>
+        </div>
+        <div>
+            <ul class="Links">
+                <li><a class="siteUni" href="https://www.fam.ulusiada.pt/" target="_blank">
+                        <img src="/meteo/icons/icon_Lusiada.png" class="icons">
+                    </a>
+                </li>
+                <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                <li><a class="instagram" href="#"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+</body>
+
+</html>

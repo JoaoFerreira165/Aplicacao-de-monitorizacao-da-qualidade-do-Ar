@@ -1,0 +1,107 @@
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;;
+    background-color: #ffffff;
+    border-radius: 30px;
+    padding-top: 11px; 
+    color: #000000;
+}
+
+.menu form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu .form-group {
+    margin-bottom: 10px;
+}
+
+.menu .form-group label {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.menu .form-group input[type=datetime-local] {
+    display: inline-block;
+    width: calc(70% - 5px);
+    height: 30px;
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.menu .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5px;
+    margin-top: -10px;
+    margin-right: 20px;
+}
+
+@media (width < 767px) {
+    .menu .button-group {
+        margin-top: -10px;
+    }
+}
+
+@media (width < 746px) {
+    .menu .button-group {
+        margin-top: 2px;
+    }
+}
+
+@media (width < 666px) {
+    .menu .button-group {
+        margin-top: -10px;
+    }
+}
+
+@media (width < 421px) {
+    .menu .button-group {
+        margin-top: 2px;
+        margin-bottom: 10px;
+    }
+}
+
+.menu .button-group button {
+    padding: 10px;
+    height: 30px;
+    padding-left: 15px;
+    border-radius: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.menu .button-group button i {
+    margin-right: 5px;
+}
+.iconsBarra{
+    width: 20px ;
+    height: 20px;
+    margin-top: -10px;
+    color:gray;
+    cursor: pointer;
+}
+.menu .menudiv{
+    display: flex;
+    justify-content: space-between;
+    background-color: #ffffff;
+    padding: 6px;
+    padding-bottom: -8px;
+    border-radius: 15%;
+}
+.btnFilter {
+    margin-left: -12px;
+}

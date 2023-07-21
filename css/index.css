@@ -1,0 +1,12 @@
+
+@media (width >	 800px) {
+    .conteudoprincipal .xxx{
+        height: 260.96px;
+    }
+}
+
+@media (width < 746px) {
+    .conteudoprincipal .xxx{
+        height: 230px;
+    }
+}

@@ -1,0 +1,380 @@
+/*--------------------------------------------------------------
+# General
+--------------------------------------------------------------*/
+* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Open Sans", sans-serif;
+    background: #f6f9ff;
+    color: #444444;
+}
+
+a {
+    color: #4154f1;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #717ff5;
+    text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Nunito", sans-serif;
+}
+
+#main {
+    margin-top: 50px;
+    padding: 20px 30px;
+    transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+@media (max-width: 1199px) {
+    #main {
+        padding: 20px;
+    }
+}
+
+.pagetitle {
+    margin-bottom: 10px;
+}
+
+.pagetitle h1 {
+    font-size: 24px;
+    margin-bottom: 0;
+    font-weight: 600;
+    color: #012970;
+}
+
+/* botão para voltar para o inicio da pagina */
+.back-to-top {
+    position: fixed;
+    visibility: hidden;
+    opacity: 0;
+    right: 15px;
+    bottom: 15px;
+    z-index: 99999;
+    background: #4154f1;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    transition: all 0.4s;
+}
+
+.back-to-top i {
+    font-size: 24px;
+    color: #fff;
+    line-height: 0;
+}
+
+.back-to-top:hover {
+    background: #6776f4;
+    color: #fff;
+}
+
+.back-to-top.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.logo {
+    line-height: 1;
+}
+
+@media (min-width: 1200px) {
+    .logo {
+        width: 280px;
+    }
+}
+
+.logo img {
+    max-height: 36px;
+    margin-right: 14px;
+    margin-left: -10px;
+}
+
+.logo span {
+    font-size: 23px;
+    font-weight: 700;
+    color: #000000;
+    font-family: "Nunito", sans-serif;
+}
+
+.header {
+    transition: all 0.5s;
+    z-index: 997;
+    width: auto;
+    height: 60px;
+    box-shadow: 0px 2px 20px rgba(1, 41, 112, 0.1);
+    background-color: #fff;
+    padding-left: 20px;
+    padding-right: 50px;
+}
+.header .tituloSite span{
+    font-size: 16pt;
+}
+.header .toggle-sidebar-btn {
+    font-size: 32px;
+    cursor: pointer;
+    color: #000000;
+    margin-left: 0px;
+}
+
+.header-nav ul {
+    list-style: none;
+}
+
+.header-nav>ul {
+    margin: 0;
+    padding: 0;
+}
+
+.header-nav .paginaAtual {
+    margin-left: 30px;
+}
+
+.header-nav .paginaAtual span {
+    color: #000000;
+    font-size: 15pt;
+    font-weight: 700;
+}
+@media (max-width: 799px) {
+    .header-nav .paginaAtual span {
+        font-size: 13pt;
+    }
+}
+
+@media (max-width: 500px) {
+    .header-nav .paginaAtual span {
+        font-size: 11pt;
+    }
+}
+
+@media (max-width: 400px) {
+    .header-nav .paginaAtual span {
+        font-size: 10pt;
+    }
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    bottom: 0;
+    width: 300px;
+    z-index: 996;
+    transition: all 0.3s;
+    padding: 20px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #aab7cf transparent;
+    box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
+    background-color: #fff;
+}
+
+@media (max-width: 1199px) {
+    .sidebar {
+        left: -300px;
+    }
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+    height: 8px;
+    background-color: #fff;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #aab7cf;
+}
+
+@media (min-width: 1200px) {
+
+    #main,
+    #rodape {
+        margin-left: 300px;
+    }
+}
+
+@media (max-width: 1199px) {
+    .toggle-sidebar .sidebar {
+        left: 0;
+    }
+}
+
+@media (min-width: 1200px) {
+
+    .toggle-sidebar #main,
+    .toggle-sidebar #rodape {
+        margin-left: 0;
+    }
+
+    .toggle-sidebar .sidebar {
+        left: -300px;
+    }
+}
+
+.sidebar-nav {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.sidebar-nav li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.sidebar-nav .nav-item {
+    margin-bottom: 5px;
+}
+
+.sidebar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: #000000;
+    transition: 0.3;
+    background: #e5eeff;
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+
+.sidebar-nav .nav-link i {
+    font-size: 16px;
+    margin-right: 10px;
+    color: #000000;
+}
+
+.sidebar-nav a.active {
+    color: #ff3f3f;
+}
+
+.sidebar-nav .nav-link.collapsed {
+    color: #000000;
+    background: #fff;
+}
+
+.sidebar-nav .nav-link.collapsed i {
+    color: #000000;
+}
+
+.sidebar-nav .nav-link:hover {
+    color: #ff3232;
+    background: #e5eeff;
+    border-radius: 10px;
+}
+
+.sidebar-nav .nav-link:hover i {
+    color: #ff3232;
+    color:rgb(252, 198, 50)
+}
+
+.sidebar-nav .nav-link .bi-chevron-down {
+    margin-right: 0;
+    transition: transform 0.2s ease-in-out;
+}
+
+.sidebar-nav .nav-link:not(.collapsed) .bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+.sidebar-nav .nav-content {
+    padding: 5px 0 0 0;
+    margin: 0;
+    list-style: none;
+}
+
+.sidebar-nav .nav-content a {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+    transition: 0.3;
+    padding: 10px 0 10px 40px;
+    transition: 0.5s;
+    margin-bottom: 4px;
+}
+
+.sidebar-nav .nav-content a i {
+    font-size: 6px;
+    margin-right: 8px;
+    line-height: 0;
+    border-radius: 50%;
+}
+
+.sidebar-nav .nav-content a:hover {
+    color: #ff3232;
+    background-color: #e5eeff;
+    border-radius: 10px;
+
+}
+
+.sidebar-nav .nav-content a.active {
+    color: #ff3232;
+    background-color: #e5eeff;
+    border-radius: 10px;
+}
+
+.iconsMenu {
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+}
+
+.iconsPagAtual {
+    width: 26px;
+    height: 26px;
+    margin-right: 8px;
+    margin-top: 1px;
+}
+.iconsPagAtualSettings {
+    width: 32px;
+    height: 32px;
+    margin-top: 1px;
+    margin-left: 30px;
+    margin-right: -50px;
+}
+.iconsPagAtualSettings:hover {
+    cursor: pointer;
+}
+
+/*loading screen*/
+.preload {
+    display: inline-block;
+    box-sizing: border-box;
+    margin-left: 40%;
+    background-color: #f6f9ff;
+    color: #000000;
+}
+
+@media (width <400px) {
+    .preload {
+        margin-left: 25%;
+        margin-bottom: 5%;
+    }
+}
+
+@media (width <321px) {
+    .preload {
+        margin-left: 14%;
+        margin-bottom: 5%;
+    }
+}

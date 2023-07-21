@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/rodape.css">
+    <link rel="stylesheet" href="./admin.css">
+    <link rel="stylesheet" href="../css/rodape.css">
+
+    <!-- JS -->
+    <script type="module" src="./admin.js"></script>
+    <script type="text/javascript" src="../bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+
+    <!--Axios-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
+
+
+</head>
+
+<body>
+    <header id="header" class="header fixed-top d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-between tituloSite">
+            <a href="../index.html" class="logo d-flex align-items-center">
+                <img src="../icons/icon_Lusiada.png" alt="">
+                <span>Admin Dashboard</span>
+            </a>
+        </div>
+        <nav class="header-nav ms-auto">
+            <ul class="d-flex align-items-center">
+                <li class="nav-item">
+                    <a class="d-flex align-items-center">
+                        <button class="btn btn-success rounded" id="btnBack">Voltar</button>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main id="main">
+        <div class="table-responsive ">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h3 class="fw-light align-items-center" style="margin-top: 10px;">Torres</h3>
+                </div>
+                <div class="col-lg-6">
+                    <button class="btn btn-outline-primary float-right add" id="openModal">Adicionar
+                        Torre</button>
+
+                </div>
+            </div>
+            <table class="table table-bordered align-middle bg-white pl-3 text-center" id="tabelaTorres">
+                <thead class="bg-light ">
+                    <tr>
+                        <th>Torre</th>
+                        <th>Caminho</th>
+                        <th>Torre Associada Base Dados</th>
+                        <th>Variaveis</th>
+                        <th>Estado</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody> </tbody>
+            </table>
+        </div>
+        <br>
+        <div class="table-responsive ">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h3 class="fw-light align-items-center" style="margin-top: 10px;">Variáveis</h3>
+                </div>
+                <div class="col-lg-6">
+                    <button class="btn btn-outline-primary float-right add" id="openModalVar">Adicionar
+                        Variável</button>
+                </div>
+            </div>
+            <table class="table table-bordered align-middle bg-white pl-3 text-center" id="tabelaVariaveis">
+                <thead class="bg-light ">
+                    <tr>
+                        <th>Variável</th>
+                        <th>Nome Associado Base Dados</th>
+                        <th>Variável 2 </th>
+                        <th>Nome Base Dados 2 </th>
+                        <th>ficheiro</th>
+                        <th>Icon</th>
+                        <th>grandeza</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody> </tbody>
+            </table>
+        </div>
+
+        <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Adicionar nova Torre</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="row g-3 needs-validation" novalidate>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Nome da Torre</label>
+                                <input type="text" class="form-control" id="form_NomeTorre"
+                                    placeholder="Nome da torre...." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip02" class="form-label fw-bold">Torre Associada Base
+                                    Dados</label>
+                                <input type="text" class="form-control" id="form_TorreAssoc"
+                                    placeholder="Nome associado na base de dados..." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltipUsername" class="form-label fw-bold">Variaveis</label>
+                                <div class="input-group has-validation">
+                                    <input type="number" class="form-control" readonly id="form_Variaveis"
+                                        placeholder="Número de Variaveis...." min="0" max="15" value="0"
+                                        aria-describedby="validationTooltipUsernamePrepend" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip03" class="form-label fw-bold">Estado</label>
+                                <select class="form-select" id="form_estado" aria-label="Default select example">
+                                    <option selected disabled>Estado da Torre</option>
+                                    <option value="1">Ativada</option>
+                                    <option value="0">Desativada</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Cidade</label>
+                                <input type="text" class="form-control" id="form_NomeCidade"
+                                    placeholder="Nome da Cidade...." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Freguesia</label>
+                                <input type="text" class="form-control" id="form_NomeFreguesia"
+                                    placeholder="Nome da Freguesia...." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Local</label>
+                                <input type="text" class="form-control" id="form_NomeLocal"
+                                    placeholder="Nome do Local...." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Rua</label>
+                                <input type="text" class="form-control" id="form_NomeRua" placeholder="Nome da Rua...."
+                                    required>
+                            </div>
+                            <div class="col-md-12 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Coordenadas</label>
+                                <input type="text" class="form-control" id="form_coordenadas"
+                                    placeholder="Coordenadas...." required>
+                            </div>
+                            <div class="col-md-12 position-relative" id="infoNovasVariaveis" hidden>
+                                <label for="validationTooltip01"
+                                    class="form-label fw-bold ms-2 d-flex justify-content-center">Nome da
+                                    Variavel</label>
+                            </div>
+                            <div id="form_name" class="row position-relative"></div>
+
+                            <div class="col-md-6 d-flex justify-content-center">
+                                <button type="button" id="adicionar-linha"
+                                    class="btn btn-success btn-sm rounded fw-bold adicionar-linha">Adicionar
+                                    linha</button>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-center">
+                                <button type="button" id="remover-linha"
+                                    class="btn btn-danger btn-sm rounded fw-bold remover-linha">Remover
+                                    linha</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-primary" id="btn_addtoTable">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="myModalEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Editar Torre</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="row g-3 needs-validation" novalidate>
+                            <div class="col-md-6 position-relative" hidden>
+                                <label for="validationTooltip01" class="form-label fw-bold">id Torre</label>
+                                <input type="number" class="form-control" id="form_IdTorreEdit" required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Nome da Torre</label>
+                                <input type="text" class="form-control" id="form_NomeTorreEdit"
+                                    placeholder="Nome da torre...." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip02" class="form-label fw-bold">Torre Associada Base
+                                    Dados</label>
+                                <input type="text" class="form-control" id="form_TorreAssocEdit"
+                                    placeholder="Nome associado na base de dados..." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltipUsername" class="form-label fw-bold">Variaveis</label>
+                                <div class="input-group has-validation">
+                                    <input type="number" class="form-control" readonly id="form_VariaveisEdit"
+                                        placeholder="Número de Variaveis...." min="0" max="15" value="0"
+                                        aria-describedby="validationTooltipUsernamePrepend" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip03" class="form-label fw-bold">Estado</label>
+                                <select class="form-select" id="form_estadoEdit" aria-label="Default select example">
+                                    <option selected disabled>Estado da Torre</option>
+                                    <option value="1">Ativada</option>
+                                    <option value="0">Desativada</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Cidade</label>
+                                <input type="text" class="form-control" id="form_NomeCidadeEdit"
+                                    placeholder="Sem informação...." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Freguesia</label>
+                                <input type="text" class="form-control" id="form_NomeFreguesiaEdit"
+                                    placeholder="Sem informação...." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Local</label>
+                                <input type="text" class="form-control" id="form_NomeLocalEdit"
+                                    placeholder="Sem informação...." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Rua</label>
+                                <input type="text" class="form-control" id="form_NomeRuaEdit" placeholder="Sem informação...."
+                                    required>
+                            </div>
+                            <div class="col-md-12 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Coordenadas</label>
+                                <input type="text" class="form-control" id="form_coordenadasEdit"
+                                    placeholder="Sem informação...." required>
+                            </div>
+                            <div class="col-md-12 position-relative" id="infoNovasVariaveisEdit" hidden>
+                                <label for="validationTooltip01"
+                                    class="form-label fw-bold ms-2 d-flex justify-content-center">Nome da
+                                    Variavel</label>
+                            </div>
+                            <div id="form_nameEdit" class="row position-relative form_nameEdit"></div>
+
+                            <div class="col-md-6 d-flex justify-content-center">
+                                <button type="button" id="adicionar-linhaEdit"
+                                    class="btn btn-success btn-sm rounded fw-bold adicionar-linhaEdit">Adicionar
+                                    linha</button>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-center">
+                                <button type="button" id="remover-linhaEdit"
+                                    class="btn btn-danger btn-sm rounded fw-bold remover-linhaEdit">Remover
+                                    linha</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-primary" id="btn_editTable">Editar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="myModalDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center" id="exampleModalLabel">Eliminar Torre</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body" id="modalDeletebody">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btn_deletefromTable">Apagar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="myModalAddVariavel" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Adicionar nova Variável</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="row g-3 needs-validation" novalidate>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Nome da Variável</label>
+                                <input type="text" class="form-control" id="form_NomeVar"
+                                    placeholder="Exemplo: Vento...." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip02" class="form-label fw-bold">Nome Associada Base
+                                    Dados</label>
+                                <input type="text" class="form-control" id="form_VarAssoc" placeholder="WindSpeed"
+                                    required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Nome da Variável 2
+                                    (Opcional) </label>
+                                <input type="text" class="form-control" id="form_NomeVar2"
+                                    placeholder="Direção do Vento..." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip02" class="form-label fw-bold">Nome Associada Base
+                                    Dados 2 (Opcional)</label>
+                                <input type="text" class="form-control" id="form_VarAssoc2" placeholder="WindDirection"
+                                    required>
+                            </div>
+                            <div class="col-md-12 position-relative">
+                                <label for="validationTooltip01" class="form-label fw-bold">Selecione um Icon associado
+                                    á Variável (Opcional)</label>
+                                <label class="form-label fw-bold">
+                                    <a href="https://www.flaticon.com/search" target="_blank"> Flaticon </a>
+                                </label> <input type="file" class="form-control" id="iconInput"
+                                    accept="image/png, image/x-icon">
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip02" class="form-label fw-bold">Nome Ficheiro</label>
+                                <input type="text" class="form-control" id="form_NomeFicheiro"
+                                    placeholder="Nome do Ficheiro..." required>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label for="validationTooltip02" class="form-label fw-bold">Grandeza</label>
+                                <input type="text" class="form-control" id="form_Grandeza"
+                                    placeholder="Grandeza medida..." required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-primary" id="btn_addtoTableVar">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="myModalDeleteVar" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center" id="exampleModalLabel">Eliminar Variável</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body" id="modalDeletebodyVar">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btn_deletefromTableVar">Apagar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer id="rodape" class="rodape">
+        <div class="sobre">
+            <h6><strong>SOBRE:</strong></h6>
+            <p>Website para controlo de Variaveis Atmosféricas</p>
+        </div>
+        <div>
+            <ul class="Links">
+                <li><a class="siteUni" href="https://www.fam.ulusiada.pt/" target="_blank">
+                        <img src="../icons/icon_Lusiada.png" class="icons">
+                    </a>
+                </li>
+                <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                <li><a class="instagram" href="#"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,243 @@
+.actualValue {
+    font-weight: 700;
+    font-size: 14pt;
+}
+
+.AlertNodata {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    font-size: 26pt;
+    color: red;
+    transform: rotate(-20deg);
+}
+
+.AlertNodata2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14pt;
+    color: red;
+}
+
+.icons {
+    margin-right: 2px;
+    margin-bottom: 4px;
+    width: 38px;
+    height: 32px;
+}
+
+.iconsTitle {
+    margin-right: 5px;
+    margin-top: -10px;
+    width: 37px;
+    height: 37px;
+}
+
+.iconsBody {
+    width: 28px;
+    height: 28px;
+    margin-top: -5px;
+}
+
+.iconsMaxMin {
+    margin-right: 8px;
+    margin-bottom: 2px;
+    width: 45px;
+    height: 45px;
+}
+
+.MaxValue {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 15pt;
+    color: rgb(255, 166, 0);
+    font-weight: 700;
+}
+
+.min {
+    color: rgb(63, 63, 63);
+    font-size: 13pt;
+}
+
+.MinValue {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 15pt;
+    color: rgb(128, 128, 255);
+    font-weight: 700;
+}
+
+.Value {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 15pt;
+    color: rgb(87, 87, 87);
+    font-weight: 700;
+}
+
+.lastTimeUpdated {
+    margin-top: -20px;
+}
+
+.compare {
+    background-color: #ffffff;
+    position: relative;
+    text-align: center;
+    border: 1px solid rgb(189, 189, 189);
+    border-radius: 6px;
+    min-height: 50px;
+    height: auto;
+    margin-bottom: 5px;
+    padding-top: 9px;
+}
+.compare .torre {
+    font-size: 11pt;
+}
+
+.compare .LastValue {
+    font-weight: 700;
+    font-size: 13pt;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.buttonsOpenCompare {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+}
+
+.compare:hover .buttonsOpenCompare {
+    display: block;
+    justify-content: end;
+}
+
+.compare:hover .torre {
+    display: none;
+    height: 60px;
+}
+
+.compareIndex {
+    background-color: #ffffff;
+    position: relative;
+    text-align: center;
+    border: 1px solid rgb(189, 189, 189);
+    border-radius: 6px;
+    min-height: 50px;
+    height: auto;
+    margin-bottom: 5px;
+    padding-top: 3px;
+}
+.compareIndex .torre {
+    font-size: 11pt;
+}
+
+.compareIndex .LastValue {
+    font-weight: 700;
+    font-size: 13pt;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.compareIndex:hover .buttonsOpenCompare {
+    display: block;
+    justify-content: end;
+}
+
+.compareIndex:hover .torre {
+    display: none;
+    height: 60px;
+}
+
+
+
+
+.modal-divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    border-left: 1px solid #d6d6d6;
+}
+
+.titleModal {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.value-comparison {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    padding-bottom: 0px;
+}
+
+.value-comparison .value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.value-comparison .valueDiv .value h3 {
+    font-size: 18px;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.value-comparison .valueDiv p.value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.gauge {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.iconsWind {
+    width: 25px;
+    height: 25px;
+    margin-right: 8px;
+}
+
+.iconsWindTable {
+    width: 26px;
+    height: 26px;
+}
+
+.iconsWindTableIndex {
+    margin-top: 6px;
+    width: 26px;
+    height: 26px;
+}
+
+.iconsWindActual {
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+}
+
+.nomePonto {
+    font-size: 18px;
+    color: rgb(142, 142, 255);
+}
+
+.localizacao {
+    font-size: 14pt;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.filter .dropdown-item:hover {
+    cursor: pointer;
+}
+
+.refresh .dropdown-item:hover {
+    cursor: pointer;
+}

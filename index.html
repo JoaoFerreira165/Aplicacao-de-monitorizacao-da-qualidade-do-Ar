@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iot Dashboard</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/meteo/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/meteo/css/index.css">
+    <link rel="stylesheet" href="/meteo/css/barraOpt.css">
+    <link rel="stylesheet" href="/meteo/css/rodape.css">
+    <link rel="stylesheet" href="/meteo/css/defaultTorres.css">
+    <link rel="stylesheet" href="/meteo/menu/menu.css">
+
+    <!-- JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="/meteo/bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="/meteo/menu/menu.js" defer></script>
+    <script type="module" src="/meteo/index.js" defer></script>
+    <script type="module" src="/meteo/menu/menuFunction.js" defer></script>
+    <script type="module" src="/meteo/menu/ActualPage.js" defer></script>
+</head>
+
+<body>
+    <header id="header" class="header fixed-top d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-between tituloSite">
+            <a href="index.html" class="logo d-flex align-items-center">
+                <img src="/meteo/icons/icon_Lusiada.png" alt="">
+                <span class="d-none d-lg-block">Air Quality Dashboard</span>
+            </a>
+            <i class="bi bi-list toggle-sidebar-btn"></i>
+        </div>
+        <nav class="header-nav ms-auto">
+            <ul class="d-flex align-items-center" id="Pagina-Atual">
+
+            </ul>
+        </nav>
+    </header>
+    <aside id="sidebar" class="sidebar">
+        <ul class="sidebar-nav" id="sidebar-nav">
+        </ul>
+    </aside>
+    <main id="main">
+        <div class="menu">
+            <form>
+                <div class="form-group me-3">
+                    <label for="start-date">Início:</label>
+                    <input type="datetime-local" id="start-date">
+                </div>
+                <div class="form-group">
+                    <span for="end-date">Fim:</label>
+                        <input type="datetime-local" id="end-date">
+                </div>
+                <div class="button-group">
+                    <button type="button" id="ActualData"
+                        class="btn btn-outline-primary btn-sm mt-1 rounded ActualData"><i
+                            class="fa fa-check"></i></button>
+                    <button type="button" id="ReloadPage"
+                        class="btn btn-outline-primary btn-sm ms-1 mt-1 rounded ms-2 ReloadPage"><i
+                            class="fa fa-refresh"></i></button>
+                </div>
+                <div class="filter">
+                    <button class="btn btn-outline-primary btn-sm dropdown-toggle rounded  mb-2 btnFilter" type="button"
+                        id="dropdownMenuButtonFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                        Filtro
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonFilter">
+                        <li class="dropdown-header text-start border-bottom">
+                            <h5 style="color: gray;" class="d-flex justify-content-center">Filtrar Dados</h5>
+                        </li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart1h">Last Hour</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart3h active">Last 3 Hours</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart6h">Last 6 Hours</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart12h">Last 12 Hours</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChartToday">Today</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChartWeek">This Week</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChartMonth">Last Month</a></li>
+                    </ul>
+                </div>
+                <div class="refresh">
+                    <button class="btn btn-outline-primary btn-sm dropdown-toggle rounded ms-2 mb-2" type="button"
+                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        Refresh
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li class="dropdown-header text-start border-bottom">
+                            <h5 style="color: gray;" class="d-flex justify-content-center">Atualizar Dados</h5>
+                        </li>
+                        <li><a class="dropdown-item dropdown-itemRefresh active " value="15000">15 segundos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="30000">30 segundos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="60000">1 minuto</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="300000">5 minutos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="600000">10 minutos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="1800000">30 minutos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" id="desativarFiltro"
+                                value="null">Desativar</a></li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="preload"><img src="/meteo/icons/loading-slow-net.gif" id="gif" hidden></div>
+        <div class="conteudo" id="conteudo">
+            <div class="col-lg-12" id="NodataHidden" hidden>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center border-bottom text-center">
+                            <h4 class="card-title" id="TitulovariavelNoData"></h4>
+                        </div>
+                        <h2 id="mensagem" class="AlertNodata"></h2>
+                        <p id="mensagem2" class="text-center"></p>
+                    </div>
+                </div>
+            </div>
+            <div id="restoconteudo" style="margin-top: -20px;">
+
+            </div>
+        </div>
+
+    </main>
+    <footer id="rodape" class="rodape">
+        <div class="sobre">
+            <h6><strong>SOBRE:</strong></h6>
+            <p>Website para controlo de Variaveis Atmosféricas</p>
+        </div>
+        <div>
+            <ul class="Links">
+                <li><a class="siteUni" href="https://www.fam.ulusiada.pt/" target="_blank">
+                        <img src="/meteo/icons/icon_Lusiada.png" class="icons">
+                    </a>
+                </li>
+                <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                <li><a class="instagram" href="#"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+</body>
+
+</html>

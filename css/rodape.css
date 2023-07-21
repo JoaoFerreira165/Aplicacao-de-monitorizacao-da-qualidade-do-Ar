@@ -1,0 +1,64 @@
+.rodape {
+    padding: 10px 0;
+    font-size: 14px;
+    transition: all 0.3s;
+    border-top: 3px solid #b0ccfc;
+    background-color: #ffffff;
+    height: 130px;
+}
+
+.rodape .sobre {
+    text-align: center;
+    color: #000000;
+}
+
+.rodape .icons {
+    width: 34px;
+    height: 34px;
+    margin-bottom: 3px;
+    margin-left: 2px;
+    margin-top: -2px;
+}
+
+.rodape .Links {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    justify-content: center;
+    margin-left: -50px;
+    margin-top: 8px;
+}
+
+.rodape .Links a {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    margin-left: 15px;
+    margin-right: 0;
+    border-radius: 100%;
+    background-color: #33353d;
+    color: #ffffff;
+    font-size: 16px;
+    text-align: center;
+    display: inline-block;
+    -webkit-transition: all .2s linear;
+    -o-transition: all .2s linear;
+    transition: all .2s linear;
+}
+
+.Links li {
+    display: inline-block;
+    margin-bottom: 4px
+}
+
+.Links a:hover {
+    color: #fff;
+    background-color: #0099ff;
+}
+
+.Links a.facebook:hover {
+    background-color: #3b5998;
+}
+
+.Links a.instagram:hover {
+    background-color: #ea4c89;
+}
