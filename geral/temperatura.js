@@ -16,9 +16,7 @@ function load(lang) {
     translate.init(attributeName, currentLng);
     translate.process();
 }
-
 var language = localStorage.getItem('language') ? localStorage.getItem('language') : 'pt';
-
 document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
     item.addEventListener('click', async function () {
         document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
@@ -472,11 +470,11 @@ for (let i = 0; i < infosVariaveisByName.data.length; i++) {
                 const dataStart = dateStart.value.split('T');
                 const dataFinish = dateFinish.value.split('T');
                 InsertDataIntervalModal.innerHTML = "Entre - " + dataStart[0] + " " + dataStart[1] + " e " + dataFinish[0] + " " + dataFinish[1];
-                load( localStorage.getItem('language') ? localStorage.getItem('language') : 'pt');
+                load(localStorage.getItem('language') ? localStorage.getItem('language') : 'pt');
                 modal.show();
             })
         });
-    } 
+    }
 }
 $(document).ready(function () {
     $(`#abrirModalMaisDados`).on('click', async function () {
@@ -485,7 +483,7 @@ $(document).ready(function () {
         const dataFinish = dateFinish.value.split('T');
         InsertDataIntervalModalMaisDados.innerHTML = "Entre - " + dataStart[0] + " " + dataStart[1] + " e " + dataFinish[0] + " " + dataFinish[1];
         modalMaisDados.show();
-        load( localStorage.getItem('language') ? localStorage.getItem('language') : 'pt');
+        load(localStorage.getItem('language') ? localStorage.getItem('language') : 'pt');
     })
 });
 $(document).ready(function () {
