@@ -11,7 +11,7 @@ function setLanguage(lang) {
 
 function load(lang) {
     var translate = new Translate();
-    var currentLng = lang;//'fr'
+    var currentLng = lang;
     var attributeName = 'data-tag';
     translate.init(attributeName, currentLng);
     translate.process();
