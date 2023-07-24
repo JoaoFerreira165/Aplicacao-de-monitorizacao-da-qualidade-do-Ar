@@ -2,7 +2,6 @@ import { criarMenu, menuItens } from '/meteo/menu/menuFunction.js';
 import { ActualPage } from '/meteo/menu/ActualPage.js';
 import { dataIntervalDias, dataIntervalMinutos, InfoAllByMeteobaseIdAndTorresId, InfoReadVariaveisByName } from '/meteo/scripts/getDados.js';
 import { checkData, checkConteudo, createTable, addData, createTableShowData, createCompareDiv, creatBodyModal, graficos, chartjs, ResetZoom, setDateInputs, creatBodyModalMostrarMaisDados, distime, checkDados, refreshOtherTowers, addGraph, refreshOtherTowersByDate, exportToCSV, convertHTMLtoPDF2 } from '/meteo/scripts/function.js';
-
 import { Translate } from '/meteo/languages/translation.js';
 
 function setLanguage(lang) {
@@ -42,7 +41,6 @@ if (infos1torreVar.data.length == 0) {
     window.location.href = "/meteo/errorPage/error_page.html";
 }
 let intervaloAtuali;
-
 document.querySelectorAll('.dropdown-itemFiltro').forEach(function (item) {
     item.addEventListener('click', function () {
         document.querySelectorAll('.dropdown-itemFiltro').forEach(function (item) {
