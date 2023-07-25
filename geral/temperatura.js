@@ -7,7 +7,6 @@ import { Translate } from '/meteo/languages/translation.js';
 function setLanguage(lang) {
     localStorage.setItem('language', lang);
 }
-
 function load(lang) {
     var translate = new Translate();
     var currentLng = lang;
