@@ -34,7 +34,7 @@ let nomeVariavelBaseDados = infos1torreVar.data[0].NomeBaseDados;
 var nomeTorreAtual = infos1torreVar.data[0].nomeTorre;
 let grandeza = infos1torreVar.data[0].grandeza;
 let intervalo = 60;
-let minutos = 10;
+let minutos = 60;
 let comIntervalo = false;
 let tempoMinutos = false;
 document.querySelectorAll('.dropdown-itemFiltro').forEach(function (item) {
@@ -392,7 +392,7 @@ async function getDadosData(start, end) {
         checkData(dados.data, chartjs, comIntervalo, intervalo, tempoMinutos);
         checkConteudo();
         await WindDirection(dadosWindDir.data, "ActualWindDIR", "LastWindDirection")
-        await showDataWind(datdateFinishEnd, "windTable");
+        await showDataWind(dateFinish, "windTable");
         ResetZoom();
         createTable(dados.data, variavel, "tabelaEstatis", grandeza);
         createTableShowData(dados.data, "tabelaMostrarDados", grandeza)
