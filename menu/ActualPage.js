@@ -1,5 +1,5 @@
 async function ActualPage(icon, torre, pagina) {
-  console.log("x");
+  //console.log("x");
   let html = `
       <li class="nav-item">
         <a class="nav-link d-flex align-items-center paginaAtual">

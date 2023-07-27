@@ -16,6 +16,13 @@ function load(lang) {
 }
 var language = localStorage.getItem('language') ? localStorage.getItem('language') : 'pt';
 document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
+    item.classList.remove('active');
+});
+document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
+    console.log(item.innerHTML)
+    if (language === item.innerHTML) {
+        item.classList.add('active')
+    }
     item.addEventListener('click', async function () {
         document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
             item.classList.remove('active');
@@ -35,7 +42,7 @@ const variavelId = params.get("variavel_Id");
 console.log("Torre:", torreId);
 console.log("Variável:", variavelId);
 let infos1torreVar = await InfoAllByMeteobaseIdAndTorresId(torreId, variavelId);
-console.log(infos1torreVar);
+//console.log(infos1torreVar);
 if (infos1torreVar.data.length == 0) {
     window.location.href = "/meteo/errorPage/error_page.html";
 }
@@ -70,7 +77,7 @@ document.querySelectorAll('.dropdown-itemRefresh').forEach(function (item) {
 var pathname = x.pathname;
 var filename = pathname.split('/').pop();
 if (filename == infos1torreVar.data[0].ficheiro + ".html") {
-    console.log("igual");
+    //console.log("igual");
 }
 else {
     filename = infos1torreVar.data[0].ficheiro + ".html"; // Define o novo nome do arquivo
@@ -79,8 +86,8 @@ else {
 }
 //let infosVariaveisById = await InfoReadVariaveisById(infos1torreVar.data[0].id_variavel);
 let infosVariaveisByName = await InfoReadVariaveisByName(infos1torreVar.data[0].nomeVariavel2, infos1torreVar.data[0].id_variavel);
-console.log(infosVariaveisByName)
-console.log(infos1torreVar)
+//console.log(infosVariaveisByName)
+//console.log(infos1torreVar)
 var nomeTorre = infos1torreVar.data[0].nome;
 var variavel = infos1torreVar.data[0].nomeVariavel;
 var IconVariavel = infos1torreVar.data[0].icon;
@@ -88,7 +95,7 @@ var nomeTorreBaseDados = infos1torreVar.data[0].torreAssoc;
 let nomeVariavelBaseDados = infos1torreVar.data[0].NomeBaseDados;
 var nomeTorreAtual = infos1torreVar.data[0].nomeTorre;
 let grandeza = infos1torreVar.data[0].grandeza;
-console.log(grandeza)
+//console.log(grandeza)
 let intervalo = 60;
 let minutos = 180;
 let comIntervalo = true;
@@ -194,9 +201,9 @@ async function getDadosMinutos() {
             graficoGauge = true;
             gauge.refresh(dados.data[dados.data.length - 1].value.toFixed(3));
         }
-        console.log(new Date());
+        //console.log(new Date());
         intervaloAtuali = setInterval(atualizarGraf, valueRefresh);
-        console.log(new Date());
+        //console.log(new Date());
         load(language)
     }
 }

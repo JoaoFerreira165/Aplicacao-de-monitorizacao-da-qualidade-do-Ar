@@ -11,7 +11,7 @@ const instanceLocal = axios.create({
  async function checkToken() {
     try {
         dataTest = await instanceLocal.post(`api/data/checkToken`);
-        console.log(dataTest)
+        //console.log(dataTest)
     }
     catch (err) {
         console.log(err);

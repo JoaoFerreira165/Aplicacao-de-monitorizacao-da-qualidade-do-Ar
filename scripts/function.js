@@ -414,7 +414,7 @@ export async function createCompareDiv(div, torreAtual, infos) {
     }
   }
   for (let i = 0; i < infos.length; i++) {
-    console.log(infos[i].activa);
+    //console.log(infos[i].activa);
     if (
       infos[i].nomeTorre != torreAtual &&
       infos[i].nomeVariavel != "Dashboard" && infos[i].activa == 1
