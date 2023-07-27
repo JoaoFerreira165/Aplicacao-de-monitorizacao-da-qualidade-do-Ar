@@ -23,6 +23,13 @@ document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
     if (language === item.innerHTML) {
         item.classList.add('active')
     }
+    else{
+        document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
+            if(item.innerHTML === "pt"){
+                item.classList.add('active')
+            }
+        });
+    }
     item.addEventListener('click', async function () {
         document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
             item.classList.remove('active');
