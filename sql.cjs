@@ -8,18 +8,15 @@ const axios = require('axios');
 const readline = require("readline");
 const CircularJSON = require('circular-json');
 const rateLimit = require("express-rate-limit");
-
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 1000
 });
-
 const app = express()
 app.use(cors());
 app.use(express.static(__dirname));
 app.use(limiter);
 let passwordSql;
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 const hiddenQuestion = (query) =>
@@ -139,7 +136,6 @@ app.post('/api/data/minutos', async (req, res) => {
         res.status(500).send(error.response.data);
     }
 })
-
 //meteobase Get
 app.get('/api/meteo/meteobase/readAll', (req, res) => {
     connection.query('SELECT * FROM meteobase', (err, rows) => {
@@ -214,7 +210,6 @@ app.delete('/meteo/meteobase/deleteById/:id', (req, res) => {
         }
     });
 });
-
 //Torres Get
 app.get('/meteo/torres/readAll', (req, res) => {
     connection.query('SELECT * FROM torres ', (err, rows) => {
@@ -277,7 +272,6 @@ app.delete('/meteo/torres/deleteById/:id', (req, res) => {
         }
     });
 });
-
 //variaveis Get
 app.get('/meteo/variaveis/readAll', (req, res) => {
     connection.query('SELECT * FROM variaveis ', (err, rows) => {
@@ -343,7 +337,6 @@ app.post('/meteo/variaveis/insert', (req, res) => {
         res.status(200).send('Dados inseridos na tabela variaveis com sucesso.');
     });
 });
-
 //utilizadores Get
 app.get('/meteo/auth/users/readAll', (req, res) => {
     connection.query('SELECT * FROM utilizadores', (err, rows) => {
@@ -382,7 +375,6 @@ app.get('/meteo/auth/logout/check', (req, res) => {
     req.session.destroy();
     res.redirect('http://localhost/meteo/');
 });
-
 //data
 app.get('/meteo/data/readByDate/:data', (req, res) => {
     const data = req.params.data;
@@ -507,7 +499,6 @@ app.post('/meteo/data/insert', (req, res) => {
         res.status(200).send('Dados inseridos na tabela Data com sucesso.');
     });
 });
-
 //localizaçao
 app.get('/meteo/localizacao/readAll', (req, res) => {
     connection.query('SELECT * FROM localizacao ', (err, rows) => {
@@ -567,7 +558,6 @@ app.delete('/meteo/localizacao/deleteByMeteobaseId/:id', (req, res) => {
         }
     });
 });
-
 //all
 app.get('/meteo/all/readAllByMeteobaseId/:id', (req, res) => {
     connection.query(`SELECT * FROM meteobase LEFT JOIN torres ON(meteobase.id = torres.id_torre) 
@@ -666,7 +656,7 @@ app.post('/meteo/saveIcon', upload.single('icon'), (req, res) => {
 function sleep(millis) {
     return new Promise(resolve => setTimeout(resolve, millis));
 }
-const ip = '';
+//const ip = '';
 const port = 3000;
 
 app.listen(port, () => {
