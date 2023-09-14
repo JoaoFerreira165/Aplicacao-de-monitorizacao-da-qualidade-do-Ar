@@ -633,7 +633,6 @@ app.get('/meteo/all/readAllByVariaveisNameOrId/', (req, res) => {
         }
     });
 });
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './icons/');
@@ -658,11 +657,9 @@ function sleep(millis) {
 }
 //const ip = '';
 const port = 3000;
-
 app.listen(port, () => {
     console.log('Servidor na porta 3000!');
 });
-
 let connection;
 async function createConnectionSql(password) {
     connection = mysql.createConnection({
