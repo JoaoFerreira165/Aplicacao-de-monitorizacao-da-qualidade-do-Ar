@@ -23,8 +23,8 @@ Currently **under development.**
 
 http://lab.fam.ulusiada.pt/meteo/
 
-![Login](./other/readme_img/Login.png)
-![Films](./other/readme_img/Films.png)
+![QualidadeDoAr](./other/imagem1.png)
+![Films](./other/imagem2.png)
 
 
 cd Meteo
