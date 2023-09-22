@@ -1,7 +1,7 @@
 
 # meteo
 
-The "Air Quality Monitoring Application" is a user-friendly software solution designed to track and assess air quality in real-time. It offers valuable insights into various air pollutants, such as particulate matter (PM2.5 and PM10), carbon monoxide (CO), nitrogen dioxide (NO2), and ozone (O3), Temperature, etc. Users can access up-to-date air quality data, 
+The "Air Quality Monitoring Application" is a user-friendly software solution designed to track and assess air quality in real-time. It offers valuable insights into various air pollutants, such as particulate matter (PM2.5 and PM10), carbon monoxide (CO), nitrogen dioxide (NO2), and ozone (O3), Temperature, etc. Users can access up-to-date air quality data.
 
 Key Features:
 
