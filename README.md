@@ -24,9 +24,11 @@ Currently **under development.**
 WEBSITE --> http://lab.fam.ulusiada.pt/meteo/
 
 Temperature visualization of "Tower Inova 1".
+
 ![QualidadeDoAr](./other/Imagem1.png)
 
 Line comparison chart of air quality between two days at the same time period.
+
 ![Films](./other/Imagem2.png)
 
 
