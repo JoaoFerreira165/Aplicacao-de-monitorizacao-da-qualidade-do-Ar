@@ -51,7 +51,7 @@ export async function InfoTowersByName(nome) {
 export async function DeleteTowerById(id) {
     return await instanceLocal.delete(`meteo/meteobase/deleteById/${id}`);
 }
-
+//torres
 //Torres
 export async function InfoTorres() {
     return await instanceLocal.get(`meteo/torres/readAll`);

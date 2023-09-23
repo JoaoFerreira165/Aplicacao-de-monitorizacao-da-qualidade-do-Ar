@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const username = document.getElementById('userName').value;
     const password = document.getElementById('pwd').value;
-    await axios.post('http://localhost:3000/meteo/auth/login/check', {"username": username,"password": password},
+    await axios.post('http://10.3.246.249:3000/meteo/auth/login/check', {"username": username,"password": password},
     { headers: headers })
       .then(response => {
         console.log(response);
