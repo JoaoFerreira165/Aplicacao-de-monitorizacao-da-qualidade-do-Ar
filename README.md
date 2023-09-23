@@ -31,9 +31,3 @@ Line comparison chart of air quality between two days at the same time period.
 
 ![Films](./other/Imagem2.png)
 
-
-cd Meteo
-
-npm install
-
-npm start / node sql.cjs
