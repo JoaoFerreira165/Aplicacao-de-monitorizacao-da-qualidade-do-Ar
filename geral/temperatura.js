@@ -1,46 +1,8 @@
 import { criarMenu, menuItens } from '/meteo/menu/menuFunction.js';
 import { ActualPage } from '/meteo/menu/ActualPage.js';
-import { dataIntervalDias, dataIntervalMinutos, InfoAllByMeteobaseIdAndTorresId, InfoReadVariaveisByName } from '/meteo/scripts/getDados.js';
-import { checkData, checkConteudo, createTable, addData, createTableShowData, createCompareDiv, creatBodyModal, graficos, chartjs, ResetZoom, setDateInputs, creatBodyModalMostrarMaisDados, distime, checkDados, refreshOtherTowers, addGraph, refreshOtherTowersByDate, exportToCSV, convertHTMLtoPDF2 } from '/meteo/scripts/function.js';
-import { Translate } from '/meteo/languages/translation.js';
+import { dataIntervalDias, dataIntervalMinutos, InfoAllByMeteobaseId, InfoAllByMeteobaseIdAndTorresId, InfoAllByTorresId, InfoReadVariaveisById, InfoReadVariaveisByName } from '/meteo/scripts/getDados.js';
+import { checkData, checkConteudo, createTable, addData, createTableShowData, DataMediaSeconds, createCompareDiv, creatBodyModal, graficos, chartjs, ResetZoom, setDateInputs, creatBodyModalMostrarMaisDados, distime, checkDados, refreshOtherTowers, addGraph, refreshOtherTowersByDate, exportToCSV, convertHTMLtoPDF2 } from '/meteo/scripts/function.js';
 
-function setLanguage(lang) {
-    localStorage.setItem('language', lang);
-}
-function load(lang) {
-    var translate = new Translate();
-    var currentLng = lang;
-    var attributeName = 'data-tag';
-    translate.init(attributeName, currentLng);
-    translate.process();
-}
-var language = localStorage.getItem('language') ? localStorage.getItem('language') : 'pt';
-document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
-    item.classList.remove('active');
-});
-document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
-    console.log(item.innerHTML)
-    if (language === item.innerHTML) {
-        item.classList.add('active')
-    }
-    else{
-        document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
-            if(item.innerHTML === "pt"){
-                item.classList.add('active')
-            }
-        });
-    }
-    item.addEventListener('click', async function () {
-        document.querySelectorAll('.dropdown-itemLanguage').forEach(function (item) {
-            item.classList.remove('active');
-        });
-        this.classList.add('active');
-        var x = this.getAttribute('value');
-        console.log(x);
-        setLanguage(x);
-        load(x);
-    });
-});
 var url = window.location.href;
 var x = new URL(url)
 const params = new URLSearchParams(x.search);
@@ -49,11 +11,12 @@ const variavelId = params.get("variavel_Id");
 console.log("Torre:", torreId);
 console.log("Variável:", variavelId);
 let infos1torreVar = await InfoAllByMeteobaseIdAndTorresId(torreId, variavelId);
-//console.log(infos1torreVar);
+console.log(infos1torreVar);
 if (infos1torreVar.data.length == 0) {
     window.location.href = "/meteo/errorPage/error_page.html";
 }
 let intervaloAtuali;
+
 document.querySelectorAll('.dropdown-itemFiltro').forEach(function (item) {
     item.addEventListener('click', function () {
         document.querySelectorAll('.dropdown-itemFiltro').forEach(function (item) {
@@ -84,7 +47,7 @@ document.querySelectorAll('.dropdown-itemRefresh').forEach(function (item) {
 var pathname = x.pathname;
 var filename = pathname.split('/').pop();
 if (filename == infos1torreVar.data[0].ficheiro + ".html") {
-    //console.log("igual");
+    console.log("igual");
 }
 else {
     filename = infos1torreVar.data[0].ficheiro + ".html"; // Define o novo nome do arquivo
@@ -93,8 +56,8 @@ else {
 }
 //let infosVariaveisById = await InfoReadVariaveisById(infos1torreVar.data[0].id_variavel);
 let infosVariaveisByName = await InfoReadVariaveisByName(infos1torreVar.data[0].nomeVariavel2, infos1torreVar.data[0].id_variavel);
-//console.log(infosVariaveisByName)
-//console.log(infos1torreVar)
+console.log(infosVariaveisByName)
+console.log(infos1torreVar)
 var nomeTorre = infos1torreVar.data[0].nome;
 var variavel = infos1torreVar.data[0].nomeVariavel;
 var IconVariavel = infos1torreVar.data[0].icon;
@@ -102,7 +65,7 @@ var nomeTorreBaseDados = infos1torreVar.data[0].torreAssoc;
 let nomeVariavelBaseDados = infos1torreVar.data[0].NomeBaseDados;
 var nomeTorreAtual = infos1torreVar.data[0].nomeTorre;
 let grandeza = infos1torreVar.data[0].grandeza;
-//console.log(grandeza)
+console.log(grandeza)
 let intervalo = 60;
 let minutos = 180;
 let comIntervalo = true;
@@ -153,7 +116,7 @@ let dados2;
 let dadosNormaOntem;
 var linhaOntem = false;
 createCompareDiv(divForCompare, nomeTorreAtual, infosVariaveisByName.data);
-//document.getElementById("MaxAndMin").innerHTML = `Máximos e Mínimos ${grandeza} `;
+document.getElementById("MaxAndMin").innerHTML = `Máximos e Mínimos ${grandeza} `;
 var toggleButton = document.getElementById("toggle-line");
 toggleButton.addEventListener("click", toggleNewLine);
 async function getDadosOntem(start, end) {
@@ -208,10 +171,9 @@ async function getDadosMinutos() {
             graficoGauge = true;
             gauge.refresh(dados.data[dados.data.length - 1].value.toFixed(3));
         }
-        //console.log(new Date());
+        console.log(new Date());
         intervaloAtuali = setInterval(atualizarGraf, valueRefresh);
-        //console.log(new Date());
-        load(language)
+        console.log(new Date());
     }
 }
 getDadosMinutos();
@@ -481,7 +443,6 @@ for (let i = 0; i < infosVariaveisByName.data.length; i++) {
                 const dataStart = dateStart.value.split('T');
                 const dataFinish = dateFinish.value.split('T');
                 InsertDataIntervalModal.innerHTML = "Entre - " + dataStart[0] + " " + dataStart[1] + " e " + dataFinish[0] + " " + dataFinish[1];
-                load(localStorage.getItem('language') ? localStorage.getItem('language') : 'pt');
                 modal.show();
             })
         });
@@ -494,7 +455,6 @@ $(document).ready(function () {
         const dataFinish = dateFinish.value.split('T');
         InsertDataIntervalModalMaisDados.innerHTML = "Entre - " + dataStart[0] + " " + dataStart[1] + " e " + dataFinish[0] + " " + dataFinish[1];
         modalMaisDados.show();
-        load(localStorage.getItem('language') ? localStorage.getItem('language') : 'pt');
     })
 });
 $(document).ready(function () {
@@ -517,5 +477,3 @@ $(document).ready(function () {
         convertHTMLtoPDF2(dados.data, nomeTorre, variavel, grandeza);
     })
 })
-
-

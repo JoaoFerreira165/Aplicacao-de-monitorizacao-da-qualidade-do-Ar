@@ -90,6 +90,7 @@
     margin-bottom: 5px;
     padding-top: 9px;
 }
+
 .compare .torre {
     font-size: 11pt;
 }
@@ -120,39 +121,6 @@
     display: none;
     height: 60px;
 }
-
-.compareIndex {
-    background-color: #ffffff;
-    position: relative;
-    text-align: center;
-    border: 1px solid rgb(189, 189, 189);
-    border-radius: 6px;
-    min-height: 50px;
-    height: auto;
-    margin-bottom: 5px;
-    padding-top: 3px;
-}
-.compareIndex .torre {
-    font-size: 11pt;
-}
-
-.compareIndex .LastValue {
-    font-weight: 700;
-    font-size: 13pt;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-.compareIndex:hover .buttonsOpenCompare {
-    display: block;
-    justify-content: end;
-}
-
-.compareIndex:hover .torre {
-    display: none;
-    height: 60px;
-}
-
-
-
 
 .modal-divider {
     position: absolute;

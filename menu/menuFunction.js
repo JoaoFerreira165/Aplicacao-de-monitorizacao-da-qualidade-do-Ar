@@ -18,7 +18,7 @@ function verifie(infos) {
     }
 }
 let infos = await InfoTowersAll();
-//console.log(infos);
+console.log(infos);
 verifie(infos);
 
 const menuItens = [];

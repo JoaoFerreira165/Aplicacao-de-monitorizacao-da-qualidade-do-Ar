@@ -59,12 +59,12 @@
         <div class="menu">
             <form>
                 <div class="form-group me-3">
-                    <label for="start-date" data-tag="startDate">Início:</label>
+                    <label for="start-date">Início:</label>
                     <input type="datetime-local" id="start-date">
                 </div>
                 <div class="form-group">
-                    <label for="end-date" data-tag="endDate">Fim:</label>
-                    <input type="datetime-local" id="end-date">
+                    <span for="end-date">Fim:</label>
+                        <input type="datetime-local" id="end-date">
                 </div>
                 <div class="button-group">
                     <button type="button" id="ActualData"
@@ -76,54 +76,38 @@
                 </div>
                 <div class="filter">
                     <button class="btn btn-outline-primary btn-sm dropdown-toggle rounded mb-2 btnFilter" type="button"
-                        id="dropdownMenuButtonFilter" data-bs-toggle="dropdown" aria-expanded="false" data-tag="Filter">
+                        id="dropdownMenuButtonFilter" data-bs-toggle="dropdown" aria-expanded="false">
                         Filtro
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonFilter">
                         <li class="dropdown-header text-start border-bottom">
-                            <h5 style="color: gray;" class="d-flex justify-content-center" data-tag="Filter2">Filtrar
-                                Dados</h5>
+                            <h5 style="color: gray;" class="d-flex justify-content-center">Filtrar Dados</h5>
                         </li>
-                        <li><a class="dropdown-item dropdown-itemFiltro updateChart1h" data-tag="FilterLastHour">Last
-                                Hour</a></li>
-                        <li><a class="dropdown-item dropdown-itemFiltro updateChart3h active"
-                                data-tag="FilterLast3Hour">Last 3 Hours</a></li>
-                        <li><a class="dropdown-item dropdown-itemFiltro updateChart6h" data-tag="FilterLast6Hour">Last 6
-                                Hours</a></li>
-                        <li><a class="dropdown-item dropdown-itemFiltro updateChart12h" data-tag="FilterLast12Hour">Last
-                                12 Hours</a></li>
-                        <li><a class="dropdown-item dropdown-itemFiltro updateChartToday"
-                                data-tag="FilterToday">Today</a></li>
-                        <li><a class="dropdown-item dropdown-itemFiltro updateChartWeek" data-tag="FilterWeek">This
-                                Week</a></li>
-                        <li><a class="dropdown-item dropdown-itemFiltro updateChartMonth" data-tag="FilterMonth">Last
-                                Month</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart1h">Last Hour</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart3h active">Last 3 Hours</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart6h">Last 6 Hours</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChart12h">Last 12 Hours</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChartToday">Today</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChartWeek">This Week</a></li>
+                        <li><a class="dropdown-item dropdown-itemFiltro updateChartMonth">Last Month</a></li>
                     </ul>
                 </div>
                 <div class="refresh">
                     <button class="btn btn-outline-primary btn-sm dropdown-toggle rounded ms-2 mb-2" type="button"
-                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" data-tag="Refresh">
-                        Atualizar
+                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        Refresh
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <li class="dropdown-header text-start border-bottom">
-                            <h5 style="color: gray;" class="d-flex justify-content-center" data-tag="Refresh2">Atualizar
-                                Dados</h5>
+                            <h5 style="color: gray;" class="d-flex justify-content-center">Atualizar Dados</h5>
                         </li>
-                        <li><a class="dropdown-item dropdown-itemRefresh active " value="15000" data-tag="Refresh15s">15
-                                segundos</a></li>
-                        <li><a class="dropdown-item dropdown-itemRefresh" value="30000" data-tag="Refresh30s">30
-                                segundos</a></li>
-                        <li><a class="dropdown-item dropdown-itemRefresh" value="60000" data-tag="Refresh1m">1
-                                minuto</a></li>
-                        <li><a class="dropdown-item dropdown-itemRefresh" value="300000" data-tag="Refresh5m">5
-                                minutos</a></li>
-                        <li><a class="dropdown-item dropdown-itemRefresh" value="600000" data-tag="Refresh10m">10
-                                minutos</a></li>
-                        <li><a class="dropdown-item dropdown-itemRefresh" value="1800000" data-tag="Refresh30m">30
-                                minutos</a></li>
-                        <li><a class="dropdown-item dropdown-itemRefresh" id="desativarFiltro" data-tag="RefreshDisable"
-                                value="null">Desativar</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh active " value="15000">15 segundos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="30000">30 segundos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="60000">1 minuto</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="300000">5 minutos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="600000">10 minutos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" value="1800000">30 minutos</a></li>
+                        <li><a class="dropdown-item dropdown-itemRefresh" id="desativarFiltro" value="null">Desativar</a></li>
                     </ul>
                 </div>
             </form>
@@ -149,7 +133,7 @@
                                 <div class="table-responsive">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-center border-bottom">
-                                            <h4 class="card-title" data-tag="actual">Atual</h4>
+                                            <h4 class="card-title">Atual</h4>
                                         </div>
                                         <h2 id="mensagemGauge" class="AlertNodata" hidden></h2>
                                         <div class="d-flex justify-content-center p-4">
@@ -163,7 +147,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-center border-bottom">
-                                        <h5 class="mb-2" id="MaxAndMin" data-tag="MaxMin">Máximos e Mínimos</h5>
+                                        <h5 class="mb-2" id="MaxAndMin"></h5>
                                     </div>
                                     <h2 id="mensagemMaxMin" class="AlertNodata" hidden></h2>
                                     <div class="mt-2 p-1 d-flex justify-content-between">
@@ -191,18 +175,16 @@
                             <div class="d-flex justify-content-between border-bottom">
                                 <h4 class="card-title" id="TitulovariavelGrafico"></h4>
                                 <div style="margin-top: 3px;">
-                                    <span class="min" data-tag="lastUpdate">Última Atualização:</span> <span class="min"
-                                        id="LastTimeRefreshed"></span>
+                                    <span class="min">Última Atualização: <span class="min"
+                                            id="LastTimeRefreshed"></span></span>
                                 </div>
                             </div>
                             <h2 id="mensagem" class="AlertNodata" hidden></h2>
                             <canvas id="chart" style="max-height: 310px;" hidden></canvas>
                             <div class="mt-2 d-flex justify-content-between ">
-                                <button id="ResetZoom" class="btn btn-sm btn-outline-dark rounded"
-                                    data-tag="ResetZoom">Reset
+                                <button id="ResetZoom" class="btn btn-sm btn-outline-dark rounded">Reset
                                     Zoom</button>
-                                <button id="toggle-line" class="btn btn-sm btn-outline-dark rounded"
-                                    data-tag="ShowDayBefore">Mostrar/Ocultar
+                                <button id="toggle-line" class="btn btn-sm btn-outline-dark rounded">Mostrar/Ocultar
                                     Linha(dia Anterior)</button>
                             </div>
                         </div>
@@ -213,7 +195,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between border-bottom">
-                                    <h5 class="card-title" data-tag="Statistic"> Estatística </h5>
+                                    <h5 class="card-title"> Estatística </h5>
                                 </div>
                                 <div class="mt-2">
                                     <h2 id="mensagemTabela" class="AlertNodata" hidden></h2>
@@ -231,9 +213,9 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between border-bottom">
-                                <h5 class="card-title" data-tag="Data">Dados </h5>
-                                <button class="btn btn-sm btn-primary rounded mb-2" id="abrirModalMaisDados"
-                                    data-tag="More">Mais</button>
+                                <h5 class="card-title">Dados </h5>
+                                <button class="btn btn-sm btn-primary rounded mb-2"
+                                    id="abrirModalMaisDados">Mais</button>
                             </div>
                             <div class="mt-3">
                                 <table class="table table-hover" id="tabelaMostrarDados">
@@ -246,7 +228,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between border-bottom">
-                                <h5 class="card-title" data-tag="Compare">Comparar: </h5>
+                                <h5 class="card-title">Comparar: </h5>
                             </div>
                             <div class="mt-2" id="divCompare">
                             </div>
@@ -273,8 +255,7 @@
                     </div>
                     <!-- Modal footer -->
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                            data-tag="Close">Close</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
 
                 </div>
@@ -294,14 +275,13 @@
                         <div id="conteudoModalMostrarMaisDados"></div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" id="btnExportToCsv" class="btn btn-primary" data-bs-dismiss="modal"
-                            data-tag="ExportDataCsv">Exportar
+                        <button type="button" id="btnExportToCsv" class="btn btn-primary"
+                            data-bs-dismiss="modal">Exportar
                             Dados CSV </button>
-                        <button type="button" id="btnExportToPdf" class="btn btn-primary" data-bs-dismiss="modal"
-                            data-tag="ExportDataPdf">Exportar
+                        <button type="button" id="btnExportToPdf" class="btn btn-primary"
+                            data-bs-dismiss="modal">Exportar
                             Dados Pdf</button>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                            data-tag="Close">Close</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
 
                 </div>
@@ -310,8 +290,8 @@
     </main>
     <footer id="rodape" class="rodape">
         <div class="sobre">
-            <h6><strong data-tag="about">Sobre:</strong></h6>
-            <p data-tag="RodapeInfo">Website para controlo de Variaveis Atmosféricas</p>
+            <h6><strong>SOBRE:</strong></h6>
+            <p>Website para controlo de Variaveis Atmosféricas</p>
         </div>
         <div>
             <ul class="Links">
@@ -323,24 +303,9 @@
                 <li><a class="instagram" href="#"><i class="fa fa-instagram"></i></a></li>
             </ul>
         </div>
-        <button class="btn btn-outline-primary btn-sm dropdown-toggle rounded ms-2 mb-2" type="button"
-            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" data-tag="language">
-            Linguagem
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li class="dropdown-header text-start border-bottom">
-                <h5 style="color: gray;" class="d-flex justify-content-center" data-tag="language">Linguagem</h5>
-            </li>
-            <li><a class="dropdown-item dropdown-itemLanguage active " value="pt">pt</a></li>
-            <li><a class="dropdown-item dropdown-itemLanguage" value="en">en</a></li>
-            <li><a class="dropdown-item dropdown-itemLanguage" value="fr">fr</a></li>
-            <li><a class="dropdown-item dropdown-itemLanguage" value="es">es</a></li>
-        </ul>
     </footer>
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
             class="bi bi-arrow-up-short"></i></a>
 </body>
-<table>
-</table>
 
 </html>

@@ -1,7 +1,7 @@
 import { criarMenu, menuItens } from '/meteo/menu/menuFunction.js';
 import { ActualPage } from '/meteo/menu/ActualPage.js';
-import { dataIntervalDias, dataIntervalMinutos, InfoAllByMeteobaseIdAndTorresId,  InfoReadVariaveisByName } from '/meteo/scripts/getDados.js';
-import { checkData, checkConteudo, DirecaoVentoPorIntervalo, graficosWind, createTable, DataMediaHours, addData, createTableShowData, createCompareDiv, creatBodyModal, chartjs, ResetZoom, setDateInputs, creatBodyModalMostrarMaisDados, distime, checkDados, refreshOtherTowers, addGraph, refreshOtherTowersByDate, exportToCSV, convertHTMLtoPDF2 } from '/meteo/scripts/function.js';
+import { dataIntervalDias, dataIntervalMinutos, InfoAllByMeteobaseIdAndTorresId, InfoAllByMeteobaseId, InfoAllByTorresId, InfoReadVariaveisById, InfoReadVariaveisByName } from '/meteo/scripts/getDados.js';
+import { checkData, checkConteudo, DirecaoVentoPorIntervalo, graficosWind, createTable, DataMediaHours, addData, createTableShowData, DataMediaSeconds, createCompareDiv, creatBodyModal, graficos, chartjs, ResetZoom, setDateInputs, creatBodyModalMostrarMaisDados, distime, checkDados, refreshOtherTowers, addGraph, refreshOtherTowersByDate, exportToCSV, convertHTMLtoPDF2 } from '/meteo/scripts/function.js';
 
 var url = window.location.href;
 var x = new URL(url)
@@ -34,7 +34,7 @@ let nomeVariavelBaseDados = infos1torreVar.data[0].NomeBaseDados;
 var nomeTorreAtual = infos1torreVar.data[0].nomeTorre;
 let grandeza = infos1torreVar.data[0].grandeza;
 let intervalo = 60;
-let minutos = 60;
+let minutos = 10;
 let comIntervalo = false;
 let tempoMinutos = false;
 document.querySelectorAll('.dropdown-itemFiltro').forEach(function (item) {
@@ -359,7 +359,7 @@ function timeInMinutes(start, end) {
     var dateStart = new Date(start);
     var dateEnd = new Date(end);
     var diffInMilliseconds = dateEnd - dateStart;
-    return Math.floor(diffInMilliseconds / 60000);
+    return diffInMinutes = Math.floor(diffInMilliseconds / 60000);
 }
 async function getDadosData(start, end) {
     conteudo.setAttribute("hidden", true);
@@ -392,7 +392,7 @@ async function getDadosData(start, end) {
         checkData(dados.data, chartjs, comIntervalo, intervalo, tempoMinutos);
         checkConteudo();
         await WindDirection(dadosWindDir.data, "ActualWindDIR", "LastWindDirection")
-        await showDataWind(dateFinish, "windTable");
+        await showDataWind(datdateFinishEnd, "windTable");
         ResetZoom();
         createTable(dados.data, variavel, "tabelaEstatis", grandeza);
         createTableShowData(dados.data, "tabelaMostrarDados", grandeza)

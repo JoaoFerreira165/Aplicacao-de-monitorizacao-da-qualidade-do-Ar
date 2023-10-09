@@ -1,7 +1,7 @@
 import { criarMenu, menuItens } from '/meteo/menu/menuFunction.js';
 import { ActualPage } from '/meteo/menu/ActualPage.js';
-import { dataIntervalDias, dataIntervalMinutos,  InfoAllByMeteobaseIdAndTorresId,   InfoReadVariaveisByName } from '/meteo/scripts/getDados.js';
-import { checkData, checkConteudo, createTable, addData, createTableShowData,  createCompareDiv, creatBodyModal, graficos, chartjs, ResetZoom, setDateInputs, creatBodyModalMostrarMaisDados, distime, checkDados, refreshOtherTowers, addGraph, refreshOtherTowersByDate, exportToCSV, convertHTMLtoPDF2 } from '/meteo/scripts/function.js';
+import { dataIntervalDias, dataIntervalMinutos, InfoAllByMeteobaseId, InfoAllByMeteobaseIdAndTorresId, InfoAllByTorresId, InfoReadVariaveisById, InfoReadVariaveisByName } from '/meteo/scripts/getDados.js';
+import { checkData, checkConteudo, createTable, addData, createTableShowData, DataMediaSeconds, createCompareDiv, creatBodyModal, graficos, chartjs, ResetZoom, setDateInputs, creatBodyModalMostrarMaisDados, distime, checkDados, refreshOtherTowers, addGraph, refreshOtherTowersByDate, exportToCSV, convertHTMLtoPDF2 } from '/meteo/scripts/function.js';
 
 var url = window.location.href;
 var x = new URL(url)

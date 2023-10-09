@@ -1,7 +1,7 @@
 import { criarMenu, menuItens } from '/meteo/menu/menuFunction.js';
 import { ActualPage } from '/meteo/menu/ActualPage.js';
-import { dataIntervalDias, dataIntervalMinutos,  InfoAllByMeteobaseIdAndTorresId,   InfoReadVariaveisByName } from '/meteo/scripts/getDados.js';
-import { checkData, checkConteudo, createTable, addData, createTableShowData,  createCompareDiv, creatBodyModal, graficos, chartjs, ResetZoom, setDateInputs, creatBodyModalMostrarMaisDados, distime, checkDados, refreshOtherTowers, addGraph, refreshOtherTowersByDate, exportToCSV, convertHTMLtoPDF2 } from '/meteo/scripts/function.js';
+import { dataIntervalDias, dataIntervalMinutos, InfoAllByMeteobaseId, InfoAllByMeteobaseIdAndTorresId, InfoAllByTorresId, InfoReadVariaveisById, InfoReadVariaveisByName } from '/meteo/scripts/getDados.js';
+import { checkData, checkConteudo, createTable, addData, createTableShowData, DataMediaSeconds, createCompareDiv, creatBodyModal, graficos, chartjs, ResetZoom, setDateInputs, creatBodyModalMostrarMaisDados, distime, checkDados, refreshOtherTowers, addGraph, refreshOtherTowersByDate, exportToCSV, convertHTMLtoPDF2 } from '/meteo/scripts/function.js';
 
 var url = window.location.href;
 var x = new URL(url)
@@ -53,13 +53,6 @@ else {
     filename = infos1torreVar.data[0].ficheiro + ".html"; // Define o novo nome do arquivo
     var newURL = `/meteo/geral/${filename}?torre_Id=${torreId}&variavel_Id=${variavelId}`;
     window.location.href = newURL; // Redireciona para a nova 
-}
-async function valueAt0(dado) {
-    for (let i = 0; i < dado.length; i++) {
-        if (dado[i].value < 0) {
-            dado[i].value = 0;
-        }
-    }
 }
 //let infosVariaveisById = await InfoReadVariaveisById(infos1torreVar.data[0].id_variavel);
 let infosVariaveisByName = await InfoReadVariaveisByName(infos1torreVar.data[0].nomeVariavel2, infos1torreVar.data[0].id_variavel);
@@ -142,7 +135,6 @@ async function getDadosOntem(start, end) {
 async function getDadosMinutos() {
     setDateInputs(0, 0, minutos);
     dados = await dataIntervalMinutos(nomeTorreBaseDados, nomeVariavelBaseDados, minutos);
-    console.log(dados)
     var x = checkDados(dados);
     if (x) {
         clearInterval(intervaloAtuali);
@@ -154,16 +146,15 @@ async function getDadosMinutos() {
     }
     else {
         dadosNormaOntem = await getDadosOntem(dateStart, dateFinish);
-        await valueAt0(dadosNormaOntem)
         distime();
         chartjs.destroy();
         graficos(variavel);
         checkData(dados.data, chartjs, comIntervalo, intervalo, tempoMinutos);
         ResetZoom();
+        checkConteudo();
         createTable(dados.data, variavel, "tabelaEstatis", grandeza);
         createTableShowData(dados.data, "tabelaMostrarDados", grandeza)
-        await refreshOtherTowers(infosVariaveisByName, nomeTorreAtual, 5, grandeza);
-        checkConteudo();
+        refreshOtherTowers(infosVariaveisByName, nomeTorreAtual, 5, grandeza);
         gauge = new JustGage({
             id: "gauge",
             value: 0,

@@ -5,8 +5,9 @@ let result = {};
 let averages = {};
 let maxDirections = {};
 let NodataHidden = document.getElementById("NodataHidden");
-let mensagem = document.getElementById("mensagem");
 let mensagem2 = document.getElementById("mensagem2");
+let mensagem = document.getElementById("mensagem");
+
 let restoconteudo = document.getElementById("restoconteudo");
 let dateStart = document.getElementById("start-date");
 let dateFinish = document.getElementById("end-date");
@@ -383,11 +384,11 @@ export function createTable(dado, variavel, tabela, grandeza) {
   let tab = `
     <thead class="table-primary table-bordered border-secondary" >
     <tr>
-        <th data-tag="Variable">Variavel</th>
-        <th data-tag="Average">Média</th>
-        <th data-tag="StandardDeviation">Desvio Padrão</th>
-        <th data-tag="Maximum">Máximo</th>
-        <th data-tag="Minimum">Mínimo</th>
+        <th>Variavel</th>
+        <th>Média</th>
+        <th>Desvio Padrão</th>
+        <th>Máximo</th>
+        <th>Mínimo</th>
     </tr>
     </thead>
     <tbody>
@@ -414,7 +415,7 @@ export async function createCompareDiv(div, torreAtual, infos) {
     }
   }
   for (let i = 0; i < infos.length; i++) {
-    //console.log(infos[i].activa);
+    console.log(infos[i].activa);
     if (
       infos[i].nomeTorre != torreAtual &&
       infos[i].nomeVariavel != "Dashboard" && infos[i].activa == 1
@@ -428,10 +429,10 @@ export async function createCompareDiv(div, torreAtual, infos) {
                     <div class="buttonsOpenCompare">
                         <button type="button" onclick="window.open('${infos[i].caminho + infos[i].ficheiro
         }.html?torre_Id=${infos[i].id_torre + "&variavel_Id=" + infos[i].torres_id
-        }','_blank');"  class="btn btn-sm btn-outline-primary rounded openPage" data-tag="Open" >Abrir</button>
+        }','_blank');"  class="btn btn-sm btn-outline-primary rounded openPage">Abrir</button>
                         <button type="button" id="abrirModal${i}" data="${menuItens[id].text
         }" data2="${infos[i].nome}" data3="${infos[i].torreAssoc}" data4="${infos[i].NomeBaseDados
-        }" class="btn btn-sm btn-outline-primary rounded" data-tag="Compare">Comparar</button>
+        }" class="btn btn-sm btn-outline-primary rounded">Comparar</button>
                     </div>
                 </div>`;
     }
@@ -445,7 +446,7 @@ export function creatBodyModal(torreEsq, torreDir, dadoTorreEsq, dadoTorreDir) {
   document.getElementById("torreEsq").innerHTML = torreEsq;
   document.getElementById("torreDir").innerHTML = torreDir;
   if (dadoTorreEsq.length == 0 || dadoTorreDir.length == 0) {
-    x = `<h3 class="AlertNodata" data-tag="NoData"> NO DATA </h3>`;
+    x = `<h3 class="AlertNodata"> NO DATA </h3>`;
   } else {
     x = `
             <div class="value-comparison border-top">
@@ -455,7 +456,7 @@ export function creatBodyModal(torreEsq, torreDir, dadoTorreEsq, dadoTorreDir) {
       ].value.toFixed(2)}</p>
                 </div>
                 <div class="valueDiv">
-                    <h3 data-tag="actual">Atual</h3>
+                    <h3>Atual</h3>
                  </div>
                 <div class="valueDiv">
                 <p class="value">${dadoTorreDir[
@@ -468,7 +469,7 @@ export function creatBodyModal(torreEsq, torreDir, dadoTorreEsq, dadoTorreDir) {
                     <p class="value">${valuesTorreEsq.media.toFixed(2)}</p>
                 </div>
                 <div class="valueDiv">
-                    <h3 data-tag="Average">Média</h3>
+                    <h3>Média</h3>
                 </div>
                 <div class="valueDiv">
                     <p class="value">${valuesTorreDir.media.toFixed(2)}</p>
@@ -479,7 +480,7 @@ export function creatBodyModal(torreEsq, torreDir, dadoTorreEsq, dadoTorreDir) {
                     <p class="value">${valuesTorreEsq.max.toFixed(2)}</p>
                 </div>
                 <div class="valueDiv">
-                    <h3 data-tag="Maximum">Máximo</h3>
+                    <h3>Máximo</h3>
                 </div>
                 <div class="valueDiv">
                     <p class="value">${valuesTorreDir.max.toFixed(2)}</p>
@@ -490,7 +491,7 @@ export function creatBodyModal(torreEsq, torreDir, dadoTorreEsq, dadoTorreDir) {
                     <p class="value">${valuesTorreEsq.min.toFixed(2)}</p>
                 </div>
                 <div class="valueDiv">
-                    <h3 data-tag="Minimum">Mínimo</h3>
+                    <h3>Mínimo</h3>
                 </div>
                 <div class="valueDiv">
                     <p class="value">${valuesTorreDir.min.toFixed(2)}</p>
@@ -501,7 +502,7 @@ export function creatBodyModal(torreEsq, torreDir, dadoTorreEsq, dadoTorreDir) {
                     <p class="value">${valuesTorreEsq.dp.toFixed(2)}</p>
                 </div>
                 <div class="valueDiv">
-                    <h3 data-tag="StandardDeviation">Desvio Padrão</h3>
+                    <h3>Desvio Padrão</h3>
                 </div>
                 <div class="valueDiv">
                 <p class="value">${valuesTorreDir.dp.toFixed(2)}</p>
@@ -578,8 +579,8 @@ export function createTableShowData(dado, tabela, grandeza) {
   var dadosMedia = DataMediaMinutes(dado, 60);
   let tabShowData = `<thead>
         <tr>
-            <th scope="col" data-tag="Hour">Hora</th>                                
-            <th scope="col" data-tag="Value">Valor</th>
+            <th scope="col">Hora</th>                                
+            <th scope="col">Valor</th>
         </tr>
     </thead>
     <tbody>`;
@@ -609,8 +610,8 @@ export function creatBodyModalMostrarMaisDados(torreAtual, dadoTorreAtual, caden
   x = `<table class="table table-hover table-bordered border-secondary text-center">
             <thead>
                 <tr>
-                    <th data-tag="Hour">Hora</th>                                
-                    <th data-tag="Value">Valor</th>
+                    <th>Hora</th>                                
+                    <th>Valor</th>
                 </tr>
             </thead>
             <tbody>`;
@@ -628,7 +629,7 @@ export function creatBodyModalMostrarMaisDados(torreAtual, dadoTorreAtual, caden
     }
     x += `</tbody>`;
   } else {
-    x = `<h3 class="AlertNodata" data-tag="NoData"> NO DATA </h3>`;
+    x = `<h3 class="AlertNodata"> NO DATA </h3>`;
   }
   document.getElementById("conteudoModalMostrarMaisDados").innerHTML = x;
 }
@@ -639,8 +640,9 @@ export function distime() {
 }
 export function checkDados(dado) {
   if (dado.request.status == 500) {
-    gif.setAttribute("hidden", true);
-    restoconteudo.setAttribute("hidden", true);
+  gif.setAttribute("hidden", true);
+  restoconteudo.setAttribute("hidden", true);
+
     mensagem.innerHTML = "ERRO...";
     if (dado.response.data === "Status(StatusCode=\"ResourceExhausted\", Detail=\"Received message exceeds the maximum configured message size.\")") {
       mensagem2.innerHTML = `Mensagem do Servidor: <span style="color: red;"> O intervalo de tempo configurado excede o tamanho máximo configurado.</span>`;
@@ -666,7 +668,7 @@ export function checkDados(dado) {
   }
   else if (dado.request.status == 0) {
     gif.setAttribute("hidden", true);
-    restoconteudo.setAttribute("hidden", true);
+    restoconteudo.setAttribute("hidden", true);	
     mensagem.innerHTML = "ERRO...";
     mensagem2.innerHTML = `Mensagem do Servidor: <span style="color: red;"> ${dado.message}</span>`;
     NodataHidden.removeAttribute("hidden");
@@ -700,10 +702,10 @@ export async function refreshOtherTowers(infosVariaveisByName, nomeTorreAtual, m
       );
       if (dataTorre.request.status == 500) {
         document.getElementById(`LastValueDivCompare${i}`).innerHTML =
-          "<br>" + "<span class='AlertNodata2' data-tag=`NoData`>Sem dados</span>";
+          "<br>" + "<span class='AlertNodata2'>Sem dados</span>";
       } else if (dataTorre.data.length == 0) {
         document.getElementById(`LastValueDivCompare${i}`).innerHTML =
-          "<br>" + "<span class='AlertNodata2' data-tag=`NoData`>Sem dados</span>";
+          "<br>" + "<span class='AlertNodata2'>Sem dados</span>";
       } else {
         document.getElementById(`LastValueDivCompare${i}`).innerHTML =
           "<br>" +
@@ -727,10 +729,10 @@ export async function refreshOtherTowersByDate(infosVariaveisByName, nomeTorreAt
       );
       if (dataTorre.request.status == 500) {
         document.getElementById(`LastValueDivCompare${i}`).innerHTML =
-          "<br>" + "<span class='AlertNodata2' data-tag=`NoData`>Sem dados</span>";
+          "<br>" + "<span class='AlertNodata2'>Sem dados</span>";
       } else if (dataTorre.data.length == 0) {
         document.getElementById(`LastValueDivCompare${i}`).innerHTML =
-          "<br>" + "<span class='AlertNodata2' data-tag=`NoData`>Sem dados</span>";
+          "<br>" + "<span class='AlertNodata2'>Sem dados</span>";
       } else {
         document.getElementById(`LastValueDivCompare${i}`).innerHTML =
           "<br>" +

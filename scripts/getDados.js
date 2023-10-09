@@ -4,20 +4,26 @@ const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*'
 }
+/*Localhost
 const instanceLocal = axios.create({
     baseURL: 'http://10.3.246.249:3000/',
-    //baseURL: 'http://lab.fam.ulusiada.pt:3000/',
 });
+*/
+//Lusiada
+const instanceLocal = axios.create({
+    baseURL: 'http://lab.fam.ulusiada.pt:3000/',
+});
+
  async function checkToken() {
     try {
         dataTest = await instanceLocal.post(`api/data/checkToken`);
-        //console.log(dataTest)
+        console.log(dataTest)
     }
     catch (err) {
         console.log(err);
     }
 }
-checkToken();
+//checkToken();
 
 export async function dataIntervalDias(torre, dado, start, end) {
     try {

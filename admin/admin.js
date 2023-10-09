@@ -249,12 +249,12 @@ async function createTableTowers() {
         }
         if (infos.data[i].activa == 1) {
             x = `<td>
-             <span class="badge rounded-pill bg-success ">Ativada</span>
+             <span class="badge rounded-pill bg-success ">Ativa</span>
                 </td>`;
         }
         else {
             x = `<td>
-             <span class="badge rounded-pill bg-danger ">Desativada</span>
+             <span class="badge rounded-pill bg-danger ">Desativa</span>
                 </td>`;
         }
         let infos2 = await InfoAllByMeteobaseId(infos.data[i].id);
@@ -266,11 +266,10 @@ async function createTableTowers() {
                 variaveis += infos2.data[j].nomeVariavel + "&nbsp&nbsp | &nbsp&nbsp";
             }
         }
-        let linhaEscondida = `
-        <tr class="hidden-rows${i} collapse">
-            <td colspan="1">Variáveis:</td>
-            <td colspan="4">${variaveis}</td>
-        </tr>`;
+        let linhaEscondida = `<tr class="hidden-rows${i} collapse">
+        <td colspan="1">Variáveis:</td>
+        <td colspan="4">${variaveis}</td>
+    </tr>`;
         var novaLinha = $(` 
         <tr>
             <td data-bs-toggle="collapse" data-bs-target=".hidden-rows${i}">

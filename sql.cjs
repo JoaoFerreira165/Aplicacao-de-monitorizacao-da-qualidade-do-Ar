@@ -1,850 +1,740 @@
-const express = require("express");
-const multer = require("multer");
-const mysql = require("mysql");
-const cors = require("cors");
-const md5 = require("md5");
-const jwt = require("jsonwebtoken");
-const axios = require("axios");
+const express = require('express')
+const multer = require('multer');
+const mysql = require('mysql')
+const cors = require('cors');
+const md5 = require('md5');
+const jwt = require('jsonwebtoken');
+const axios = require('axios');
 const readline = require("readline");
-const CircularJSON = require("circular-json");
+const CircularJSON = require('circular-json');
 const rateLimit = require("express-rate-limit");
 const dotenv = require("dotenv");
+const { createLogger, format, transports } = require('winston');
+const { combine, timestamp, printf } = format;
 
 dotenv.config();
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 1500,
+    windowMs: 15 * 60 * 1000,
+    max: 1500
 });
 
-const app = express();
+const app = express()
 app.use(cors());
 app.use(express.static(__dirname));
 app.use(limiter);
 
 let passwordSql;
 
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const hiddenQuestion = (query) =>
-  new Promise((resolve) => {
-    console.log(query);
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
+    new Promise((resolve) => {
+        console.log(query);
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
+        rl._writeToOutput = () => { };
+        const stdin = process.openStdin();
+        process.stdin.on("data", (char) => {
+            char = char.toString("utf-8");
+            switch (char) {
+                case "\n":
+                case "\r":
+                case "\u0004":
+                    // Finished writing their response
+                    stdin.pause();
+                    break;
+                // You might make this case optional, (Ctrl-C)
+                case "\u0003":
+                    // Ctrl-C
+                    process.exit(0);
+                default:
+                    process.stdout.clearLine();
+                    readline.cursorTo(process.stdout, 0);
+                    break;
+            }
+        });
+        rl.question("", (value) => {
+            rl.history = rl.history.slice(1);
+            rl.close();
+            resolve(value);
+        });
     });
-    rl._writeToOutput = () => {};
-    const stdin = process.openStdin();
-    process.stdin.on("data", (char) => {
-      char = char.toString("utf-8");
-      switch (char) {
-        case "\n":
-        case "\r":
-        case "\u0004":
-          // Finished writing their response
-          stdin.pause();
-          break;
-        // You might make this case optional, (Ctrl-C)
-        case "\u0003":
-          // Ctrl-C
-          process.exit(0);
-        default:
-          process.stdout.clearLine();
-          readline.cursorTo(process.stdout, 0);
-          break;
-      }
-    });
-    rl.question("", (value) => {
-      rl.history = rl.history.slice(1);
-      rl.close();
-      resolve(value);
-    });
-  });
 let accessToken;
 const email = "a31719020@fam.ulusiada.pt";
 let password;
 
 const headers = {
-  "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
-};
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+}
 let dataAcess;
 
-const instance = axios.create({
-  baseURL: "http://10.3.80.6:7011/",
-});
-async function getToken() {
-  try {
-    const response = await instance.post(
-      "/api/auth/login",
-      JSON.stringify(dataAcess),
-      { headers: headers }
-    );
-    accessToken = response.data.accessToken;
-  } catch (error) {
-    console.error(error);
-    if (error.response.status === 500) {
-      //password = await hiddenQuestion("Password anterior errada! Insira Nova?");
-      dataAcess = {
-        email: email,
-        password: process.env.MONGODB_PASSWORD,
-      };
-      await getToken();
-      return;
-    } else {
-      return;
-    }
-  }
-}
-app.post("/api/data/checkToken", async (req, res) => {
-  const response = await instance.get(
-    `api/data/torre2/temperature?interval=5`,
-    {
-      headers: { Authorization: `bearer ${accessToken}` },
-    }
-  );
-  console.log(response.status);
-  if (response.status === 200) {
-    const jsonString = CircularJSON.stringify(response.data);
-    res.send(jsonString);
-  } else {
-    await getToken();
-  }
-});
-app.post("/api/data/dias", async (req, res) => {
-  const { torre, dado, start, end } = req.body;
-  try {
-    const response = await instance.get(
-      `api/data/${torre}/${dado}?start=${start}&end=${end}`,
-      {
-        headers: { Authorization: `bearer ${accessToken}` },
-      }
-    );
-    const jsonString = CircularJSON.stringify(response.data);
-    res.send(jsonString);
-  } catch (error) {
-    console.log(error.code);
-    if (error.code === "ECONNREFUSED") {
-      res.status(500).send(error);
-      return;
-    }
-    if (error.response.status === 401) {
-      await getToken();
-    }
-    res.status(500).send(error.response.data);
-  }
-});
-app.post("/api/data/minutos", async (req, res) => {
-  const { torre, dado, tempo } = req.body;
-  try {
-    const response = await instance.get(
-      `api/data/${torre}/${dado}?interval=${tempo}`,
-      {
-        headers: { Authorization: `bearer ${accessToken}` },
-      }
-    );
-    const jsonString = CircularJSON.stringify(response.data);
-    res.send(jsonString);
-  } catch (error) {
-    console.log(error);
-    if (error.code === "ECONNREFUSED") {
-      res.status(500).send(error);
-      return;
-    }
-    if (error.response.status === 401) {
-      await getToken();
-    }
-    res.status(500).send(error.response.data);
-  }
+// Configuração do logger
+const logger = createLogger({
+  level: 'info',
+  format: combine(
+    timestamp(),
+    printf(({ timestamp, level, message }) => {
+      return `${timestamp} [${level}]: ${message}`;
+    })
+  ),
+  transports: [
+    new transports.File({ filename: 'app.log' }) // Saída para arquivo
+    // Adicione outros transportes, como Logstash ou HTTP, conforme necessário
+  ],
 });
 
+// Middleware de logging personalizado
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.url}`);
+  next();
+});
+
+
+
+
+
+const instance = axios.create({
+    baseURL: 'http://10.3.80.6:7011/',
+});
+async function getToken() {
+    try {
+        const response = await instance.post('/api/auth/login', JSON.stringify(dataAcess), { headers: headers });
+        accessToken = response.data.accessToken;
+    } catch (error) {
+        console.error(error);
+        if (error.response.status === 500) {
+            //password = await hiddenQuestion("Password anterior errada! Insira Nova?");
+            dataAcess = {
+                "email": email,
+                "password": process.env.MONGODB_PASSWORD,
+            }
+            await getToken();
+            return;
+        }
+        else {
+            return;
+        }
+    }
+}
+app.post('/api/data/checkToken', async (req, res) => {
+    const response = await instance.get(`api/data/torre2/temperature?interval=5`, {
+        headers: { "Authorization": `bearer ${accessToken}` }
+    })
+    console.log(response.status)
+    if (response.status === 200) {
+        const jsonString = CircularJSON.stringify(response.data);
+        res.send(jsonString);
+    }
+    else {
+        await getToken();
+    }
+})
+app.post('/api/data/dias', async (req, res) => {
+    const { torre, dado, start, end } = req.body;
+    try {
+        const response = await instance.get(`api/data/${torre}/${dado}?start=${start}&end=${end}`, {
+            headers: { "Authorization": `bearer ${accessToken}` }
+        })
+        const jsonString = CircularJSON.stringify(response.data);
+        res.send(jsonString);
+    } catch (error) {
+        console.log(error.code);
+        if (error.code === "ECONNREFUSED") {
+            res.status(500).send(error);
+            return;
+        }
+        if (error.response.status === 401) {
+            await getToken();
+        }
+        res.status(500).send(error.response.data);
+    }
+})
+app.post('/api/data/minutos', async (req, res) => {
+    const { torre, dado, tempo } = req.body;
+    try {
+        const response = await instance.get(`api/data/${torre}/${dado}?interval=${tempo}`, {
+            headers: { "Authorization": `bearer ${accessToken}` }
+        });
+        const jsonString = CircularJSON.stringify(response.data);
+        res.send(jsonString);
+    } catch (error) {
+        console.log(error);
+        if (error.code === "ECONNREFUSED") {
+            res.status(500).send(error);
+            return;
+        }
+        if (error.response.status === 401) {
+            await getToken();
+        }
+        res.status(500).send(error.response.data);
+    }
+})
+
 //meteobase Get
-app.get("/api/meteo/meteobase/readAll", (req, res) => {
-  connection.query("SELECT * FROM meteobase", (err, rows) => {
-    if (!err) {
-      res.send(rows);
-    } else {
-      console.log(err);
-    }
-  });
-});
-app.get("/meteo/meteobase/readById/:id", (req, res) => {
-  connection.query(
-    "SELECT * FROM meteobase WHERE meteobase.id = ?",
-    [req.params.id],
-    (err, rows) => {
-      if (!err) {
-        res.send(rows);
-      } else {
-        console.log(err);
-      }
-    }
-  );
-});
-app.get("/meteo/meteobase/readByName/:nome", (req, res) => {
-  connection.query(
-    "SELECT * FROM meteobase WHERE meteobase.nome = ?",
-    [req.params.nome],
-    (err, rows) => {
-      if (!err) {
-        res.send(rows);
-      } else {
-        console.log(err);
-      }
-    }
-  );
-});
+app.get('/api/meteo/meteobase/readAll', (req, res) => {
+    connection.query('SELECT * FROM meteobase', (err, rows) => {
+        if (!err) {
+            res.send(rows)
+        } else {
+            console.log(err)
+        }
+    })
+})
+app.get('/meteo/meteobase/readById/:id', (req, res) => {
+    connection.query('SELECT * FROM meteobase WHERE meteobase.id = ?', [req.params.id], (err, rows) => {
+        if (!err) {
+            res.send(rows)
+        } else {
+            console.log(err)
+        }
+    })
+})
+app.get('/meteo/meteobase/readByName/:nome', (req, res) => {
+    connection.query('SELECT * FROM meteobase WHERE meteobase.nome = ?', [req.params.nome], (err, rows) => {
+        if (!err) {
+            res.send(rows)
+        } else {
+            console.log(err)
+        }
+    })
+})
 //meteobase Insert
-app.post("/meteo/meteobase/insert", (req, res) => {
-  const {
-    id_novaTorre,
-    valornomeTorre,
-    valorNome,
-    caminho,
-    icon,
-    valorTorreAssoc,
-    numeroPag,
-    valorEstado,
-  } = req.body;
-  const query = `INSERT INTO meteobase (id, nomeTorre, nome, caminho, icon, torreAssoc,
+app.post('/meteo/meteobase/insert', (req, res) => {
+    const { id_novaTorre, valornomeTorre, valorNome, caminho, icon, valorTorreAssoc,
+        numeroPag, valorEstado } = req.body;
+    const query = `INSERT INTO meteobase (id, nomeTorre, nome, caminho, icon, torreAssoc,
          paginas, activa) VALUES ('${id_novaTorre}','${valornomeTorre}','${valorNome}',
          '${caminho}','${icon}','${valorTorreAssoc}','${numeroPag}','${valorEstado}')`;
-  connection.query(query, (error, results) => {
-    if (error) {
-      console.error(
-        "Erro ao inserir dados na tabela meteobase: " + error.stack
-      );
-      res.status(500).send("Erro ao inserir dados na tabela meteobase.");
-      return;
-    }
-    console.log("Dados inseridos na tabela meteobase com sucesso.");
-    res.status(200).send("Dados inseridos na tabela meteobase com sucesso.");
-  });
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Erro ao inserir dados na tabela meteobase: ' + error.stack);
+            res.status(500).send('Erro ao inserir dados na tabela meteobase.');
+            return;
+        }
+        console.log('Dados inseridos na tabela meteobase com sucesso.');
+        res.status(200).send('Dados inseridos na tabela meteobase com sucesso.');
+    });
 });
 //meteobase Edit
-app.put("/meteo/meteobase/editById", (req, res) => {
-  const {
-    id_torre,
-    valornomeTorre,
-    valorNome,
-    caminho,
-    icon,
-    valorTorreAssoc,
-    numeroPag,
-    valorEstado,
-  } = req.body;
-  const query = `UPDATE meteobase SET nomeTorre='${valornomeTorre}',nome='${valorNome}',
+app.put('/meteo/meteobase/editById', (req, res) => {
+    const { id_torre, valornomeTorre, valorNome, caminho, icon, valorTorreAssoc,
+        numeroPag, valorEstado } = req.body;
+    const query = `UPDATE meteobase SET nomeTorre='${valornomeTorre}',nome='${valorNome}',
     caminho='${caminho}',icon='${icon}',torreAssoc='${valorTorreAssoc}',paginas='${numeroPag}',
     activa='${valorEstado}' WHERE id = ${id_torre};`;
-  connection.query(query, (error, results) => {
-    if (error) {
-      console.error("Erro ao edita dados na tabela meteobase: " + error.stack);
-      res.status(500).send("Erro ao editar dados na tabela meteobase.");
-      return;
-    }
-    console.log("Dados editados na tabela meteobase com sucesso.");
-    res.status(200).send("Dados editados na tabela meteobae com sucesso.");
-  });
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Erro ao edita dados na tabela meteobase: ' + error.stack);
+            res.status(500).send('Erro ao editar dados na tabela meteobase.');
+            return;
+        }
+        console.log('Dados editados na tabela meteobase com sucesso.');
+        res.status(200).send('Dados editados na tabela meteobae com sucesso.');
+    });
 });
 //meteobase Delete
-app.delete("/meteo/meteobase/deleteById/:id", (req, res) => {
-  const id = req.params.id;
-  connection.query(
-    "DELETE FROM meteobase WHERE id = ?",
-    [id],
-    (error, results) => {
-      if (error) {
-        res.status(500).send("Erro ao eliminar torre");
-      } else {
-        console.error("sucesso ao eliminar dados na tabela meteobase");
-        res.status(200).send("Torre  eliminado com sucesso");
-      }
-    }
-  );
+app.delete('/meteo/meteobase/deleteById/:id', (req, res) => {
+    const id = req.params.id;
+    connection.query('DELETE FROM meteobase WHERE id = ?', [id], (error, results) => {
+        if (error) {
+            res.status(500).send('Erro ao eliminar torre');
+        } else {
+            console.error("sucesso ao eliminar dados na tabela meteobase")
+            res.status(200).send('Torre  eliminado com sucesso');
+        }
+    });
 });
 
 //Torres Get
-app.get("/meteo/torres/readAll", (req, res) => {
-  connection.query("SELECT * FROM torres ", (err, rows) => {
-    if (!err) {
-      res.send(rows);
-    } else {
-      console.log(err);
-    }
-  });
-});
-app.get(
-  "/meteo/torres/readByVarIdAndTorreId/:meteobase_id/:variavel_id",
-  (req, res) => {
-    connection.query(
-      "SELECT * FROM `torres` WHERE id_variavel = ? AND id_torre = ?",
-      [req.params.variavel_id, req.params.meteobase_id],
-      (err, rows) => {
+app.get('/meteo/torres/readAll', (req, res) => {
+    connection.query('SELECT * FROM torres ', (err, rows) => {
         if (!err) {
-          res.send(rows);
+            res.send(rows)
         } else {
-          console.log(err);
+            console.log(err)
         }
-      }
-    );
-  }
-);
+    })
+});
+app.get('/meteo/torres/readByVarIdAndTorreId/:meteobase_id/:variavel_id', (req, res) => {
+    connection.query('SELECT * FROM `torres` WHERE id_variavel = ? AND id_torre = ?',
+        [req.params.variavel_id, req.params.meteobase_id], (err, rows) => {
+            if (!err) {
+                res.send(rows)
+            } else {
+                console.log(err)
+            }
+        })
+})
 //Torres Insert
-app.post("/meteo/torres/insert", (req, res) => {
-  const { contador, id_novaTorre, varAssoc } = req.body;
-  const query = `INSERT INTO torres (torres_id,id_torre, id_variavel) VALUES 
+app.post('/meteo/torres/insert', (req, res) => {
+    const { contador, id_novaTorre, varAssoc } = req.body;
+    const query = `INSERT INTO torres (torres_id,id_torre, id_variavel) VALUES 
     ('${contador}','${id_novaTorre}', '${varAssoc}')`;
-  connection.query(query, (error, results) => {
-    if (error) {
-      console.error("Erro ao inserir dados na tabela Torres: " + error.stack);
-      res.status(500).send("Erro ao inserir dados na tabela Torres.");
-      return;
-    }
-    console.log("Dados inseridos na tabela Torres com sucesso.");
-    res.status(200).send("Dados inseridos na tabela Torres com sucesso.");
-  });
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Erro ao inserir dados na tabela Torres: ' + error.stack);
+            res.status(500).send('Erro ao inserir dados na tabela Torres.');
+            return;
+        }
+        console.log('Dados inseridos na tabela Torres com sucesso.');
+        res.status(200).send('Dados inseridos na tabela Torres com sucesso.');
+    });
 });
 //Torres Edit
-app.put("/meteo/torres/editById/:torre_id/:variavel_id", (req, res) => {
-  const torre_id = req.params.torre_id;
-  const variavel_id = req.params.variavel_id;
-  connection.query(
-    "UPDATE torres SET id_variavel= ? WHERE torres_id = ?",
-    [variavel_id, torre_id],
-    (error, results) => {
-      if (error) {
-        console.error("Erro ao inserir dados na tabela Torres: " + error.stack);
-        res.status(500).send("Erro ao inserir dados na tabela Torres.");
-        return;
-      }
-      console.log("Dados inseridos na tabela Torres com sucesso.");
-      res.status(200).send("Dados inseridos na tabela Torres com sucesso.");
-    }
-  );
+app.put('/meteo/torres/editById/:torre_id/:variavel_id', (req, res) => {
+    const torre_id = req.params.torre_id;
+    const variavel_id = req.params.variavel_id;
+    connection.query('UPDATE torres SET id_variavel= ? WHERE torres_id = ?', [variavel_id, torre_id], (error, results) => {
+        if (error) {
+            console.error('Erro ao inserir dados na tabela Torres: ' + error.stack);
+            res.status(500).send('Erro ao inserir dados na tabela Torres.');
+            return;
+        }
+        console.log('Dados inseridos na tabela Torres com sucesso.');
+        res.status(200).send('Dados inseridos na tabela Torres com sucesso.');
+    });
 });
 //Torres Delete
-app.delete("/meteo/torres/deleteById/:id", (req, res) => {
-  const id = req.params.id;
-  connection.query(
-    "DELETE FROM torres WHERE torres_id = ?",
-    [id],
-    (error, results) => {
-      if (error) {
-        console.error("erro ao eliminar dados da tabela torre");
-        res.status(500).send("Erro ao eliminar linha da tabela Torres");
-      } else {
-        console.error("sucesso ao eliminar dados da tabela torre");
-        res.status(200).send("Linha da tabela Torres eliminada com sucesso");
-      }
-    }
-  );
+app.delete('/meteo/torres/deleteById/:id', (req, res) => {
+    const id = req.params.id;
+    connection.query('DELETE FROM torres WHERE torres_id = ?', [id], (error, results) => {
+        if (error) {
+            console.error("erro ao eliminar dados da tabela torre")
+            res.status(500).send('Erro ao eliminar linha da tabela Torres');
+        } else {
+            console.error("sucesso ao eliminar dados da tabela torre")
+            res.status(200).send('Linha da tabela Torres eliminada com sucesso');
+        }
+    });
 });
 
 //variaveis Get
-app.get("/meteo/variaveis/readAll", (req, res) => {
-  connection.query("SELECT * FROM variaveis ", (err, rows) => {
-    if (!err) {
-      res.send(rows);
-    } else {
-      console.log(err);
-    }
-  });
+app.get('/meteo/variaveis/readAll', (req, res) => {
+    connection.query('SELECT * FROM variaveis ', (err, rows) => {
+        if (!err) {
+            res.send(rows)
+        } else {
+            console.log(err)
+        }
+    })
 });
-app.get("/meteo/variaveis/readById/:id", (req, res) => {
-  connection.query(
-    "SELECT * FROM variaveis WHERE variavel_id = ? ",
-    [req.params.id],
-    (err, rows) => {
-      if (!err) {
-        res.send(rows);
-      } else {
-        console.log(err);
-      }
-    }
-  );
+app.get('/meteo/variaveis/readById/:id', (req, res) => {
+    connection.query('SELECT * FROM variaveis WHERE variavel_id = ? ', [req.params.id], (err, rows) => {
+        if (!err) {
+            res.send(rows)
+        } else {
+            console.log(err)
+        }
+    })
 });
 //variaveis Delete
-app.delete("/meteo/variaveis/deleteById/:id", (req, res) => {
-  const id = req.params.id;
-  console.log(id);
-  connection.query(
-    "DELETE FROM variaveis WHERE variavel_id = ?",
-    [id],
-    (error, results) => {
-      console.log(error);
-      if (error) {
-        res.status(500).send("Erro ao eliminar variÃ¡vel");
-      } else {
-        res.status(200).send("Variavel eliminado com sucesso");
-      }
-    }
-  );
+app.delete('/meteo/variaveis/deleteById/:id', (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+    connection.query('DELETE FROM variaveis WHERE variavel_id = ?', [id], (error, results) => {
+        console.log(error);
+        if (error) {
+            res.status(500).send('Erro ao eliminar variável');
+        } else {
+            res.status(200).send('Variavel eliminado com sucesso');
+        }
+    });
 });
 //variaveis Insert
-app.post("/meteo/variaveis/insert", (req, res) => {
-  const {
-    nomeVariavel,
-    nomeBaseDados,
-    nomeVariavel2,
-    nomeBaseDados2,
-    nomeNormalizado,
-    ficheiro,
-    icon,
-    grandeza,
-  } = req.body;
-  const nomeVariavel2Value = nomeVariavel2 ? `${nomeVariavel2}` : "NULL";
-  const nomeBaseDados2Value = nomeBaseDados2 ? `${nomeBaseDados2}` : "NULL";
-  let query;
-  console.log(nomeVariavel2Value);
-  console.log(nomeBaseDados2Value);
-  if (nomeVariavel2Value == "NULL" || nomeBaseDados2Value == "NULL") {
-    query = `INSERT INTO variaveis (variavel_id, nomeVariavel, NomeBaseDados, nomeVariavel2, 
+app.post('/meteo/variaveis/insert', (req, res) => {
+    const { nomeVariavel, nomeBaseDados, nomeVariavel2, nomeBaseDados2, nomeNormalizado, ficheiro,
+        icon, grandeza } = req.body;
+    const nomeVariavel2Value = nomeVariavel2 ? `${nomeVariavel2}` : 'NULL';
+    const nomeBaseDados2Value = nomeBaseDados2 ? `${nomeBaseDados2}` : 'NULL';
+    let query;
+    console.log(nomeVariavel2Value);
+    console.log(nomeBaseDados2Value);
+    if (nomeVariavel2Value == 'NULL' || nomeBaseDados2Value == 'NULL') {
+        query = `INSERT INTO variaveis (variavel_id, nomeVariavel, NomeBaseDados, nomeVariavel2, 
             NomeBaseDados2, nomeNormalizado, ficheiro, icon,grandeza) VALUES (NULL, '${nomeVariavel}',
             '${nomeBaseDados}',NULL,NULL,'${nomeNormalizado}','${ficheiro}',
             '${icon}','${grandeza}')`;
-  } else {
-    console.log("x2");
-    query = `INSERT INTO variaveis (variavel_id, nomeVariavel, NomeBaseDados, nomeVariavel2, 
+    }
+    else {
+        console.log("x2")
+        query = `INSERT INTO variaveis (variavel_id, nomeVariavel, NomeBaseDados, nomeVariavel2, 
             NomeBaseDados2, nomeNormalizado, ficheiro, icon,grandeza) VALUES (NULL, '${nomeVariavel}',
             '${nomeBaseDados}','${nomeVariavel2Value}','${nomeBaseDados2Value}','${nomeNormalizado}','${ficheiro}',
             '${icon}','${grandeza}')`;
-    console.log(query);
-  }
-  connection.query(query, (error, results) => {
-    if (error) {
-      console.error(
-        "Erro ao inserir dados na tabela variaveis: " + error.stack
-      );
-      res.status(500).send("Erro ao inserir dados na tabela variaveis.");
-      return;
+        console.log(query);
     }
-    console.log("Dados inseridos na tabela variaveis com sucesso.");
-    res.status(200).send("Dados inseridos na tabela variaveis com sucesso.");
-  });
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Erro ao inserir dados na tabela variaveis: ' + error.stack);
+            res.status(500).send('Erro ao inserir dados na tabela variaveis.');
+            return;
+        }
+        console.log('Dados inseridos na tabela variaveis com sucesso.');
+        res.status(200).send('Dados inseridos na tabela variaveis com sucesso.');
+    });
 });
 
 //utilizadores Get
-app.get("/meteo/auth/users/readAll", (req, res) => {
-  connection.query("SELECT * FROM utilizadores", (err, rows) => {
-    if (!err) {
-      res.send(rows);
-    } else {
-      console.log(err);
-    }
-  });
+app.get('/meteo/auth/users/readAll', (req, res) => {
+    connection.query('SELECT * FROM utilizadores', (err, rows) => {
+        if (!err) {
+            res.send(rows)
+        } else {
+            console.log(err)
+        }
+    })
+})
+app.post('/meteo/auth/login/check', (req, res) => {
+    const { username, password } = req.body;
+    const sql = `SELECT * FROM utilizadores WHERE nome_utilizador = ? AND senha = ?`;
+    connection.query(sql, [username, md5(password)], (err, results) => {
+        if (err) throw err;
+        if (results.length > 0) {
+            const token = jwt.sign({ username: username }, 'meteo2023', { expiresIn: '30m' });
+            res.json({ token: token });
+        } else {
+            res.status(401).send('Nome de utilizador ou Senha errados');
+        }
+    });
 });
-app.post("/meteo/auth/login/check", (req, res) => {
-  const { username, password } = req.body;
-  const sql = `SELECT * FROM utilizadores WHERE nome_utilizador = ? AND senha = ?`;
-  connection.query(sql, [username, md5(password)], (err, results) => {
-    if (err) throw err;
-    if (results.length > 0) {
-      const token = jwt.sign({ username: username }, "meteo2023", {
-        expiresIn: "30m",
-      });
-      res.json({ token: token });
-    } else {
-      res.status(401).send("Nome de utilizador ou Senha errados");
-    }
-  });
+app.get('/meteo/auth/admin/check', (req, res) => {
+    const token = req.headers.authorization.split(' ')[1];
+    console.log(token);
+    jwt.verify(token, 'meteo2023', (err, decodedToken) => {
+        if (err) {
+            return res.status(401).json({ message: 'Token inválido' });
+        } else {
+            return res.status(200).json({ message: 'Token Válido' });
+        }
+    });
 });
-app.get("/meteo/auth/admin/check", (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  console.log(token);
-  jwt.verify(token, "meteo2023", (err, decodedToken) => {
-    if (err) {
-      return res.status(401).json({ message: "Token invÃ¡lido" });
-    } else {
-      return res.status(200).json({ message: "Token VÃ¡lido" });
-    }
-  });
-});
-app.get("/meteo/auth/logout/check", (req, res) => {
-  req.session.destroy();
-  res.redirect("http://localhost/meteo/");
+app.get('/meteo/auth/logout/check', (req, res) => {
+    req.session.destroy();
+    res.redirect('http://localhost/meteo/');
 });
 
 //data
-app.get("/meteo/data/readByDate/:data", (req, res) => {
-  const data = req.params.data;
-  connection.query(
-    "SELECT * FROM `data` WHERE date = ?",
-    [data],
-    (err, rows) => {
-      if (!err) {
-        const adjustedRows = rows.map((row) => {
-          const adjustedDate = new Date(row.date).toLocaleString("pt-PT", {
-            timeZone: "Europe/Lisbon",
-          });
-          return { ...row, date: adjustedDate };
+app.get('/meteo/data/readByDate/:data', (req, res) => {
+    const data = req.params.data;
+    connection.query('SELECT * FROM `data` WHERE date = ?',
+        [data], (err, rows) => {
+            if (!err) {
+                const adjustedRows = rows.map(row => {
+                    const adjustedDate = new Date(row.date).toLocaleString('pt-PT',
+                        { timeZone: 'Europe/Lisbon' });
+                    return { ...row, date: adjustedDate };
+                });
+                res.send(adjustedRows);
+            } else {
+                console.log(err);
+                res.sendStatus(500);
+            }
         });
-        res.send(adjustedRows);
-      } else {
-        console.log(err);
-        res.sendStatus(500);
-      }
-    }
-  );
 });
-app.get("/meteo/data/readByNameVar/:nome", (req, res) => {
-  connection.query(
-    "SELECT * FROM data WHERE data_nomeVariavel = ? ",
-    [req.params.nome],
-    (err, rows) => {
-      if (!err) {
-        res.send(rows);
-      } else {
-        console.log(err);
-      }
-    }
-  );
+app.get('/meteo/data/readByNameVar/:nome', (req, res) => {
+    connection.query('SELECT * FROM data WHERE data_nomeVariavel = ? ',
+        [req.params.nome], (err, rows) => {
+            if (!err) {
+                res.send(rows)
+            } else {
+                console.log(err)
+            }
+        })
 });
-app.get("/meteo/data/readByHashCode/:hashCode", (req, res) => {
-  connection.query(
-    "SELECT * FROM data WHERE data_idHashCode = ? ",
-    [req.params.hashCode],
-    (err, rows) => {
-      if (!err) {
-        const adjustedRows = rows.map((row) => {
-          const adjustedDate = new Date(row.date).toLocaleString("pt-PT", {
-            timeZone: "Europe/Lisbon",
-          });
-          return { ...row, date: adjustedDate };
-        });
-        res.send(adjustedRows);
-      } else {
-        console.log(err);
-      }
-    }
-  );
+app.get('/meteo/data/readByHashCode/:hashCode', (req, res) => {
+    connection.query('SELECT * FROM data WHERE data_idHashCode = ? ',
+        [req.params.hashCode], (err, rows) => {
+            if (!err) {
+                const adjustedRows = rows.map(row => {
+                    const adjustedDate = new Date(row.date).toLocaleString('pt-PT',
+                        { timeZone: 'Europe/Lisbon' });
+                    return { ...row, date: adjustedDate };
+                });
+                res.send(adjustedRows);
+            } else {
+                console.log(err)
+            }
+        })
 });
-app.get("/meteo/data/readByHashCodeAndVarId/:hashCode/:varId", (req, res) => {
-  connection.query(
-    "SELECT * FROM data WHERE data_idHashCode = ? AND variavel_id = ?",
-    [req.params.hashCode, req.params.varId],
-    (err, rows) => {
-      if (!err) {
-        const adjustedRows = rows.map((row) => {
-          const adjustedDate = new Date(row.date).toLocaleString("pt-PT", {
-            timeZone: "Europe/Lisbon",
-          });
-          return { ...row, date: adjustedDate };
-        });
-        res.send(adjustedRows);
-      } else {
-        console.log(err);
-      }
-    }
-  );
+app.get('/meteo/data/readByHashCodeAndVarId/:hashCode/:varId', (req, res) => {
+    connection.query('SELECT * FROM data WHERE data_idHashCode = ? AND variavel_id = ?',
+        [req.params.hashCode, req.params.varId], (err, rows) => {
+            if (!err) {
+                const adjustedRows = rows.map(row => {
+                    const adjustedDate = new Date(row.date).toLocaleString('pt-PT',
+                        { timeZone: 'Europe/Lisbon' });
+                    return { ...row, date: adjustedDate };
+                });
+                res.send(adjustedRows);
+            } else {
+                console.log(err)
+            }
+        })
 });
-app.get(
-  "/meteo/data/readByHashCodeAndNameVar/:hashCode/:nameVar",
-  (req, res) => {
-    connection.query(
-      "SELECT * FROM data WHERE data_idHashCode = ? AND data_nomeVariavel = ?",
-      [req.params.hashCode, req.params.nameVar],
-      (err, rows) => {
-        if (!err) {
-          const adjustedRows = rows.map((row) => {
-            const adjustedDate = new Date(row.date).toLocaleString("pt-PT", {
-              timeZone: "Europe/Lisbon",
-            });
-            return { ...row, date: adjustedDate };
-          });
-          res.send(adjustedRows);
-        } else {
-          console.log(err);
-        }
-      }
-    );
-  }
-);
-app.get(
-  "/meteo/data/readByHashCodeAndNameVarAndTorreId/:hashCode/:nameVar/:torreId",
-  (req, res) => {
-    connection.query(
-      "SELECT * FROM data WHERE data_idHashCode = ? AND data_nomeVariavel = ? AND torre_id = ?",
-      [req.params.hashCode, req.params.nameVar, req.params.torreId],
-      (err, rows) => {
-        if (!err) {
-          const adjustedRows = rows.map((row) => {
-            const adjustedDate = new Date(row.date).toLocaleString("pt-PT", {
-              timeZone: "Europe/Lisbon",
-            });
-            return { ...row, date: adjustedDate };
-          });
-          res.send(adjustedRows);
-        } else {
-          console.log(err);
-        }
-      }
-    );
-  }
-);
-app.post("/meteo/data/insert", (req, res) => {
-  const {
-    data_idHashCode,
-    torre_id,
-    variavel_id,
-    data_nomeVariavel,
-    date,
-    media,
-    max,
-    min,
-  } = req.body;
-  let query;
-  console.log("novalinha");
-  console.log(date);
-  console.log(data_nomeVariavel);
-  console.log(media);
-  console.log(max);
-  console.log(min);
-  if (data_nomeVariavel === "DireÃ§Ã£o Vento") {
-    query = `INSERT INTO data (id_data, data_idHashCode, torre_id, variavel_id, data_nomeVariavel, 
+app.get('/meteo/data/readByHashCodeAndNameVar/:hashCode/:nameVar', (req, res) => {
+    connection.query('SELECT * FROM data WHERE data_idHashCode = ? AND data_nomeVariavel = ?',
+        [req.params.hashCode, req.params.nameVar], (err, rows) => {
+            if (!err) {
+                const adjustedRows = rows.map(row => {
+                    const adjustedDate = new Date(row.date).toLocaleString('pt-PT',
+                        { timeZone: 'Europe/Lisbon' });
+                    return { ...row, date: adjustedDate };
+                });
+                res.send(adjustedRows);
+            } else {
+                console.log(err)
+            }
+        })
+});
+app.get('/meteo/data/readByHashCodeAndNameVarAndTorreId/:hashCode/:nameVar/:torreId', (req, res) => {
+    connection.query('SELECT * FROM data WHERE data_idHashCode = ? AND data_nomeVariavel = ? AND torre_id = ?',
+        [req.params.hashCode, req.params.nameVar, req.params.torreId], (err, rows) => {
+            if (!err) {
+                const adjustedRows = rows.map(row => {
+                    const adjustedDate = new Date(row.date).toLocaleString('pt-PT',
+                        { timeZone: 'Europe/Lisbon' });
+                    return { ...row, date: adjustedDate };
+                });
+                res.send(adjustedRows);
+            } else {
+                console.log(err)
+            }
+        })
+});
+app.post('/meteo/data/insert', (req, res) => {
+    const { data_idHashCode, torre_id, variavel_id, data_nomeVariavel, date, media, max, min } = req.body;
+    let query;
+    console.log("novalinha");
+    console.log(date);
+    console.log(data_nomeVariavel);
+    console.log(media);
+    console.log(max);
+    console.log(min);
+    if (data_nomeVariavel === "Direção Vento") {
+        query = `INSERT INTO data (id_data, data_idHashCode, torre_id, variavel_id, data_nomeVariavel, 
             date, media, max, min) VALUES (NULL, '${data_idHashCode}', '${torre_id}', '${variavel_id}', '${data_nomeVariavel}', '${date}', '${media}', NULL, NULL)`;
-  } else if (media === null && max === undefined && min === undefined) {
-    query = `INSERT INTO data (id_data, data_idHashCode, torre_id, variavel_id, data_nomeVariavel, 
-            date, media, max, min) VALUES (NULL, '${data_idHashCode}', '${torre_id}', '${variavel_id}', '${data_nomeVariavel}', '${date}', NULL, NULL, NULL)`;
-  } else if (media === null && max === null && min === null) {
-    query = `INSERT INTO data (id_data, data_idHashCode, torre_id, variavel_id, data_nomeVariavel, 
-            date, media, max, min) VALUES (NULL, '${data_idHashCode}', '${torre_id}', '${variavel_id}', '${data_nomeVariavel}', '${date}', NULL, NULL, NULL)`;
-  } else {
-    query = `INSERT INTO data (id_data, data_idHashCode, torre_id, variavel_id, data_nomeVariavel, 
-            date, media, max, min) VALUES (NULL, '${data_idHashCode}', '${torre_id}', '${variavel_id}', '${data_nomeVariavel}', '${date}', '${media}', '${max}', '${min}')`;
-  }
-  connection.query(query, (error, results) => {
-    if (error) {
-      console.error("Erro ao inserir dados na tabela Data: " + error.stack);
-      res.status(500).send("Erro ao inserir dados na tabela Data.");
-      return;
     }
-    console.log("Dados inseridos na tabela Data com sucesso.");
-    res.status(200).send("Dados inseridos na tabela Data com sucesso.");
-  });
+
+    else if (media === null && max === undefined && min === undefined) {
+        query = `INSERT INTO data (id_data, data_idHashCode, torre_id, variavel_id, data_nomeVariavel, 
+            date, media, max, min) VALUES (NULL, '${data_idHashCode}', '${torre_id}', '${variavel_id}', '${data_nomeVariavel}', '${date}', NULL, NULL, NULL)`;
+    }
+    else if (media === null && max === null && min === null) {
+        query = `INSERT INTO data (id_data, data_idHashCode, torre_id, variavel_id, data_nomeVariavel, 
+            date, media, max, min) VALUES (NULL, '${data_idHashCode}', '${torre_id}', '${variavel_id}', '${data_nomeVariavel}', '${date}', NULL, NULL, NULL)`;
+    }
+    else {
+        query = `INSERT INTO data (id_data, data_idHashCode, torre_id, variavel_id, data_nomeVariavel, 
+            date, media, max, min) VALUES (NULL, '${data_idHashCode}', '${torre_id}', '${variavel_id}', '${data_nomeVariavel}', '${date}', '${media}', '${max}', '${min}')`;
+    }
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Erro ao inserir dados na tabela Data: ' + error.stack);
+            res.status(500).send('Erro ao inserir dados na tabela Data.');
+            return;
+        }
+        console.log('Dados inseridos na tabela Data com sucesso.');
+        res.status(200).send('Dados inseridos na tabela Data com sucesso.');
+    });
 });
 
-//localizaÃ§ao
-app.get("/meteo/localizacao/readAll", (req, res) => {
-  connection.query("SELECT * FROM localizacao ", (err, rows) => {
-    if (!err) {
-      res.send(rows);
-    } else {
-      console.log(err);
-    }
-  });
+//localizaçao
+app.get('/meteo/localizacao/readAll', (req, res) => {
+    connection.query('SELECT * FROM localizacao ', (err, rows) => {
+        if (!err) {
+            res.send(rows)
+        } else {
+            console.log(err)
+        }
+    })
 });
-app.get("/meteo/localizacao/readByMeteobaseId/:id", (req, res) => {
-  connection.query(
-    "SELECT * FROM localizacao WHERE meteobase_id = ? ",
-    [req.params.id],
-    (err, rows) => {
-      if (!err) {
-        res.send(rows);
-      } else {
-        console.log(err);
-      }
-    }
-  );
+app.get('/meteo/localizacao/readByMeteobaseId/:id', (req, res) => {
+    connection.query('SELECT * FROM localizacao WHERE meteobase_id = ? ', [req.params.id], (err, rows) => {
+        if (!err) {
+            res.send(rows)
+        } else {
+            console.log(err)
+        }
+    })
 });
-app.post("/meteo/localizacao/insert", (req, res) => {
-  const { id_novaTorre, cidade, local, freguesia, rua, coordenadas } = req.body;
-  const query = `INSERT INTO localizacao(localizacao_id, meteobase_id, cidade, local, rua, 
+app.post('/meteo/localizacao/insert', (req, res) => {
+    const { id_novaTorre, cidade, local, freguesia, rua, coordenadas } = req.body;
+    const query = `INSERT INTO localizacao(localizacao_id, meteobase_id, cidade, local, rua, 
         freguesia, coordenadas) VALUES(NULL, '${id_novaTorre}', '${cidade}', '${local}', '${rua}',
         '${freguesia}', '${coordenadas}')`;
-  connection.query(query, (error, results) => {
-    if (error) {
-      console.error(
-        "Erro ao inserir dados na tabela localizaÃ§ao: " + error.stack
-      );
-      res.status(500).send("Erro ao inserir dados na tabela localizaÃ§ao.");
-      return;
-    }
-    console.log("Dados inseridos na tabela localizaÃ§ao com sucesso.");
-    res.status(200).send("Dados inseridos na tabela localizaÃ§ao com sucesso.");
-  });
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Erro ao inserir dados na tabela localizaçao: ' + error.stack);
+            res.status(500).send('Erro ao inserir dados na tabela localizaçao.');
+            return;
+        }
+        console.log('Dados inseridos na tabela localizaçao com sucesso.');
+        res.status(200).send('Dados inseridos na tabela localizaçao com sucesso.');
+    });
 });
-app.put("/meteo/localizacao/editById", (req, res) => {
-  const { id_torre, cidade, local, freguesia, rua, coordenadas } = req.body;
-  const query = `UPDATE localizacao SET cidade ='${cidade}',local='${local}',rua='${rua}',
+app.put('/meteo/localizacao/editById', (req, res) => {
+    const { id_torre, cidade, local, freguesia, rua, coordenadas } = req.body;
+    const query = `UPDATE localizacao SET cidade ='${cidade}',local='${local}',rua='${rua}',
     freguesia='${freguesia}', coordenadas='${coordenadas}' WHERE meteobase_id = ${id_torre};`;
-  connection.query(query, (error, results) => {
-    if (error) {
-      console.error(
-        "Erro ao edita dados na tabela localizaÃ§ao: " + error.stack
-      );
-      res.status(500).send("Erro ao editar dados na tabela localizaÃ§ao.");
-      return;
-    }
-    console.log("Dados editados na tabela localizaÃ§ao com sucesso.");
-    res.status(200).send("Dados editados na tabela localizaÃ§ao com sucesso.");
-  });
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Erro ao edita dados na tabela localizaçao: ' + error.stack);
+            res.status(500).send('Erro ao editar dados na tabela localizaçao.');
+            return;
+        }
+        console.log('Dados editados na tabela localizaçao com sucesso.');
+        res.status(200).send('Dados editados na tabela localizaçao com sucesso.');
+    });
 });
-app.delete("/meteo/localizacao/deleteByMeteobaseId/:id", (req, res) => {
-  const id = req.params.id;
-  connection.query(
-    "DELETE FROM localizacao WHERE meteobase_id = ?",
-    [id],
-    (error, results) => {
-      if (error) {
-        res.status(500).send("Erro ao eliminar localizaÃ§ao");
-      } else {
-        console.error("sucesso ao eliminar dados na tabela localizaÃ§ao");
-        res.status(200).send("localizaÃ§ao eliminado com sucesso");
-      }
-    }
-  );
+app.delete('/meteo/localizacao/deleteByMeteobaseId/:id', (req, res) => {
+    const id = req.params.id;
+    connection.query('DELETE FROM localizacao WHERE meteobase_id = ?', [id], (error, results) => {
+        if (error) {
+            res.status(500).send('Erro ao eliminar localizaçao');
+        } else {
+            console.error("sucesso ao eliminar dados na tabela localizaçao")
+            res.status(200).send('localizaçao eliminado com sucesso');
+        }
+    });
 });
 
 //all
-app.get("/meteo/all/readAllByMeteobaseId/:id", (req, res) => {
-  connection.query(
-    `SELECT * FROM meteobase LEFT JOIN torres ON(meteobase.id = torres.id_torre) 
+app.get('/meteo/all/readAllByMeteobaseId/:id', (req, res) => {
+    connection.query(`SELECT * FROM meteobase LEFT JOIN torres ON(meteobase.id = torres.id_torre) 
     LEFT JOIN variaveis ON(torres.id_variavel = variaveis.variavel_id) WHERE meteobase.id = ? `,
-    [req.params.id],
-    (err, rows) => {
-      if (!err) {
-        res.send(rows);
-      } else {
-        console.log(err);
-      }
-    }
-  );
+        [req.params.id], (err, rows) => {
+            if (!err) {
+                res.send(rows)
+            } else {
+                console.log(err)
+            }
+        })
 });
-app.get("/meteo/all/readAllByTorresId/:id", (req, res) => {
-  connection.query(
-    `SELECT * FROM meteobase INNER JOIN torres ON(meteobase.id = torres.id_torre)
+app.get('/meteo/all/readAllByTorresId/:id', (req, res) => {
+    connection.query(`SELECT * FROM meteobase INNER JOIN torres ON(meteobase.id = torres.id_torre)
     INNER JOIN variaveis ON(torres.id_variavel = variaveis.variavel_id) WHERE torres.torres_id = ?; `,
-    [req.params.id],
-    (err, rows) => {
-      if (!err) {
-        res.send(rows);
-      } else {
-        console.log(err);
-      }
-    }
-  );
+        [req.params.id], (err, rows) => {
+            if (!err) {
+                res.send(rows)
+            } else {
+                console.log(err)
+            }
+        })
 });
-app.get(
-  "/meteo/all/readAllByMeteobaseIdAndTorresId/:Meteobaseid/:TorresId",
-  (req, res) => {
-    connection.query(
-      `SELECT * FROM meteobase INNER JOIN torres ON(meteobase.id = torres.id_torre)
+app.get('/meteo/all/readAllByMeteobaseIdAndTorresId/:Meteobaseid/:TorresId', (req, res) => {
+    connection.query(`SELECT * FROM meteobase INNER JOIN torres ON(meteobase.id = torres.id_torre)
     INNER JOIN variaveis ON(torres.id_variavel = variaveis.variavel_id) WHERE torres.torres_id = ? AND meteobase.id = ?; `,
-      [req.params.TorresId, req.params.Meteobaseid],
-      (err, rows) => {
-        if (!err) {
-          res.send(rows);
-        } else {
-          console.log(err);
-        }
-      }
-    );
-  }
-);
-app.get("/meteo/all/readAllByVariaveisId/:id", (req, res) => {
-  connection.query(
-    `SELECT * FROM meteobase INNER JOIN torres ON(meteobase.id = torres.id_torre)
-     INNER JOIN variaveis ON(torres.id_variavel = variaveis.variavel_id) WHERE variaveis.variavel_id = ? ; `,
-    [req.params.id],
-    (err, rows) => {
-      if (!err) {
-        res.send(rows);
-      } else {
-        console.log(err);
-      }
-    }
-  );
+        [req.params.TorresId, req.params.Meteobaseid], (err, rows) => {
+            if (!err) {
+                res.send(rows)
+            } else {
+                console.log(err)
+            }
+        })
 });
-app.get("/meteo/all/readAllByDataId/:id", (req, res) => {
-  connection.query(
-    `SELECT * FROM data INNER JOIN meteobase ON(data.data_id = meteobase.id) 
+app.get('/meteo/all/readAllByVariaveisId/:id', (req, res) => {
+    connection.query(`SELECT * FROM meteobase INNER JOIN torres ON(meteobase.id = torres.id_torre)
+     INNER JOIN variaveis ON(torres.id_variavel = variaveis.variavel_id) WHERE variaveis.variavel_id = ? ; `
+        , [req.params.id], (err, rows) => {
+            if (!err) {
+                res.send(rows)
+            } else {
+                console.log(err)
+            }
+        })
+});
+app.get('/meteo/all/readAllByDataId/:id', (req, res) => {
+    connection.query(`SELECT * FROM data INNER JOIN meteobase ON(data.data_id = meteobase.id) 
     INNER JOIN variaveis ON(data.data_nomeVariavel = variaveis.nomeVariavel) 
-    WHERE data.data_id = ? ; `,
-    [req.params.id],
-    (err, rows) => {
-      if (!err) {
-        res.send(rows);
-      } else {
-        console.log(err);
-      }
-    }
-  );
+    WHERE data.data_id = ? ; `, [req.params.id], (err, rows) => {
+        if (!err) {
+            res.send(rows)
+        } else {
+            console.log(err)
+        }
+    })
 });
-app.get("/meteo/all/readAllByVariaveisNameOrId/", (req, res) => {
-  const nomeVariavel = req.query.nomeVariavel;
-  const variavelId = req.query.variavelId;
-  const query = `
+app.get('/meteo/all/readAllByVariaveisNameOrId/', (req, res) => {
+    const nomeVariavel = req.query.nomeVariavel;
+    const variavelId = req.query.variavelId;
+    const query = `
     SELECT *
         FROM meteobase
       INNER JOIN torres ON(meteobase.id = torres.id_torre)
       INNER JOIN variaveis ON(torres.id_variavel = variaveis.variavel_id)
       WHERE variaveis.nomeVariavel = ? OR variaveis.variavel_id = ?
         `;
-  connection.query(query, [nomeVariavel, variavelId], (err, results) => {
-    if (err) {
-      console.error("Erro ao executar a consulta:", err);
-      res.status(500).json({ error: "Erro interno do servidor" });
-    } else {
-      res.json(results);
-    }
-  });
+    connection.query(query, [nomeVariavel, variavelId], (err, results) => {
+        if (err) {
+            console.error('Erro ao executar a consulta:', err);
+            res.status(500).json({ error: 'Erro interno do servidor' });
+        } else {
+            res.json(results);
+        }
+    });
 });
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./icons/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
+    destination: function (req, file, cb) {
+        cb(null, './icons/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
 });
 const fileFilter = function (req, file, cb) {
-  if (file.mimetype === "image/png" || file.mimetype === "image/x-icon") {
-    cb(null, true);
-  } else {
-    cb(new Error("Tipo de arquivo nÃ£o suportado."));
-  }
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/x-icon') {
+        cb(null, true);
+    } else {
+        cb(new Error('Tipo de arquivo não suportado.'));
+    }
 };
 const upload = multer({ storage: storage, fileFilter: fileFilter });
-app.post("/meteo/saveIcon", upload.single("icon"), (req, res) => {
-  res.send("Ãcone salvo");
+app.post('/meteo/saveIcon', upload.single('icon'), (req, res) => {
+    res.send('Ícone salvo');
 });
 function sleep(millis) {
-  return new Promise((resolve) => setTimeout(resolve, millis));
+    return new Promise(resolve => setTimeout(resolve, millis));
 }
-const ip = "";
+const ip = '';
 const port = 3000;
 
 app.listen(port, () => {
-  console.log("Servidor na porta 3000!");
+    console.log('Servidor na porta 3000!');
 });
 
 let connection;
 async function createConnectionSql(password) {
-  connection = mysql.createConnection({
-    host: "localhost",
-    user: "meteo",
-    password: password,
-    database: "meteo",
-  });
-  connection.connect(async (err) => {
-    if (err) {
-      //let passwordSql2 = await hiddenQuestion("ERROU!! Insira novamente a Password da Base de dados SQL?");
-      createConnectionSql(process.env.SQL_PASSWORD);
-    } else {
-      console.log("Conectado ao MySQL!");
-    }
-  });
+    connection = mysql.createConnection({
+        host: 'localhost',
+        user: 'meteo',
+        password: password,
+        database: 'meteo'
+    });
+    connection.connect(async (err) => {
+        if (err) {
+            //let passwordSql2 = await hiddenQuestion("ERROU!! Insira novamente a Password da Base de dados SQL?");
+            createConnectionSql(process.env.SQL_PASSWORD);
+        }
+        else {
+            console.log('Conectado ao MySQL!');
+        }
+    });
 }
 void (async () => {
-  await sleep(500);
-  //password = await hiddenQuestion("Insira a Password Filipe?");
-  dataAcess = {
-    email: email,
-    password: process.env.MONGODB_PASSWORD,
-  };
-  //passwordSql = await hiddenQuestion("Insira a Password Base de dados SQL?");
-  await createConnectionSql(process.env.SQL_PASSWORD);
-  await getToken();
+    await sleep(500);
+    //password = await hiddenQuestion("Insira a Password Filipe?");
+    dataAcess = {
+        "email": email,
+        "password": process.env.MONGODB_PASSWORD,
+    }
+    //passwordSql = await hiddenQuestion("Insira a Password Base de dados SQL?");
+    await createConnectionSql(process.env.SQL_PASSWORD);
+    await getToken();
 })();

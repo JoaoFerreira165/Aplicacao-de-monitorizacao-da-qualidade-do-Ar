@@ -1,12 +1,20 @@
 import { criarMenu, menuItens } from "/meteo/menu/menuFunction.js";
 import { ActualPage } from "/meteo/menu/ActualPage.js";
-import {  ReadDatabyHashCodeAndNameVarAndTorreId, dataIntervalDias, dataIntervalMinutos, InfoAllByMeteobaseId, InfoAllByTorresId,  InfoLocalizacaoId } from "/meteo/scripts/getDados.js";
+import { ReadDatabyDate, InfoAllByMeteobaseIdAndTorresId, ReadDatabyNameVar, ReadDatabyHashCodeAndNameVar, ReadDatabyHashCodeAndNameVarAndTorreId, ReadDatabyHashCode, ReadDatabyHashCodeAndVarId, dataIntervalDias, dataIntervalMinutos, InfoAllByMeteobaseId, InfoAllByTorresId, InfoReadVariaveisById, InfoReadVariaveisByName, InfoLocalizacaoId } from "/meteo/scripts/getDados.js";
 import {
-  DirecaoVentoPorIntervaloByDay,  addGraph, DadoCalc} from "/meteo/scripts/function.js";
+  checkData, checkConteudo, createTable, addData, createTableShowData, DirecaoVentoPorIntervaloByDay, DirecaoVentoPorIntervalo,
+  DataMediaSeconds, createCompareDiv, creatBodyModal, setDateInputs, creatBodyModalMostrarMaisDados,
+  distime, checkDados, refreshOtherTowers, addGraph, refreshOtherTowersByDate, DadoCalc
+} from "/meteo/scripts/function.js";
 //lOCALHOST
+/*
 const instance = axios.create({
   baseURL: 'http://10.3.246.249:3000/',
-  //baseURL: 'http://lab.fam.ulusiada.pt:3000/',
+});
+*/
+//LUSIADA
+const instance = axios.create({
+  baseURL: 'http://lab.fam.ulusiada.pt:3000/',
 });
 
 var url = window.location.href;
@@ -323,8 +331,8 @@ async function createTable7days(tabela) {
           media = NaN;
           maximo = NaN;
           minimo = NaN;
-          max = NaN;
-          min = NaN;
+	  max = NaN;
+	  min = NaN;
         }
         else {
           if (infosTorreTodasVar.data[b].NomeBaseDados2 === "humidity") {
