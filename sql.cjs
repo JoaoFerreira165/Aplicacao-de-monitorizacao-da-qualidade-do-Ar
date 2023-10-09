@@ -58,6 +58,56 @@ const instance = axios.create({
   baseURL: "http://10.3.80.6:7011/",
 });
 
+/* 
+let accessToken = null;
+let refreshToken = null;
+let tokenRefreshTimer = null;
+
+// Função para obter o token de acesso
+async function getToken() {
+  try {
+    const response = await instance.post("/api/auth/login", JSON.stringify(dataAcess), {
+      headers: headers,
+    });
+
+    accessToken = response.data.accessToken;
+    refreshToken = response.data.refreshToken;
+
+    tokenRefreshTimer = setTimeout(() => {
+      renewAccessToken();
+    }, 55 * 60 * 1000); // 55 minutos em milissegundos
+  } catch (error) {
+    console.error(error);
+    if (error.response && error.response.status === 500) {
+      console.log("Erro 500: Tentando novamente em alguns segundos...");
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await getToken();
+    } else {
+      console.log("Erro ao obter token. Ação necessária para lidar com outros erros.");
+    }
+  }
+}
+
+// Função para renovar o token de acesso usando o refresh token
+async function renewAccessToken() {
+  try {
+    const response = await instance.post("/api/auth/refresh", JSON.stringify({ refreshToken }), {
+      headers: headers,
+    });
+    accessToken = response.data.accessToken;
+
+    // Defina novamente o temporizador para a próxima renovação
+    tokenRefreshTimer = setTimeout(() => {
+      renewAccessToken();
+    }, 55 * 60 * 1000); // 55 minutos em milissegundos
+  } catch (error) {
+    console.error("Erro ao renovar token:", error);
+  }
+}
+
+//getToken();
+ */
+
 async function getToken() {
   try {
     const response = await instance.post(
@@ -819,7 +869,9 @@ function createConnectionSql() {
   connection.connect(async (err) => {
     if (err) {
       console.error("Erro na conexão com a base de dados:", err);
-      setTimeout(() => {createConnectionSql(); }, 5000);
+      setTimeout(() => {
+        createConnectionSql();
+      }, 5000);
     } else {
       console.log("Conectado ao MySQL!");
     }
